@@ -1,0 +1,26 @@
+{application, tiles, [
+    {description, ""},
+    {vsn, "1"},
+    {modules, [tiles_app,tiles_sup,tiles_handler,tiles_json,
+               tiles_logger,tiles_state,tiles_bcast,tiles_feed,
+               tiles_serve_id]},
+    {registered, [tiles_app,tiles_sup,tiles_handler,tiles_json,
+                  tiles_logger,tiles_state,tiles_bcast,tiles_feed,
+                  tiles_serve_id]},
+    {applications, [
+        kernel,stdlib,crypto,cowboy,
+        compiler,lager,syntax_tools,
+        jiffy
+    ]},
+    {mod, { tiles_app, []}},
+    {env, [
+           {lager, [
+                    {log_root, "/home/griffita/development/erlang/tiles/log/"},
+                    {handlers, [
+                                {lager_console_backend, [{level, info}]},
+                                {lager_file_backend, [{file, "debug.log"}, {level, debug}]},
+                                {lager_file_backend, [{file, "error.log"}, {level, error}]},
+                                {lager_file_backend, [{file, "console.log"}, {level, info}]}
+                               ]}
+                   ]}]}
+]}.
