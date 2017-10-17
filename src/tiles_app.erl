@@ -1,6 +1,6 @@
 -module(tiles_app).
 -behaviour(application).
--export([start/2, stop/1]).
+-export([start/2, stop/1,version/0]).
 
 start(_StartType, _StartArgs) ->
     lager:debug("Starting App", []),
@@ -18,3 +18,6 @@ start(_StartType, _StartArgs) ->
 
 stop(_State) ->
 ok.
+
+version()->
+    <<"0.0.1">>.
