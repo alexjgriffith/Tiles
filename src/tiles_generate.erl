@@ -9,7 +9,7 @@
 
 %% API
 encode(Tiles)->
-    jiffy:encode([encode_tile(Tile)|| Tile <- Tiles]).
+    jiffy:encode([[encode_tile(Tile)|| Tile<-T] || T<- Tiles]).
 
 decode(Tiles)->
     Decoded = jiffy:decode(Tiles),
@@ -19,12 +19,20 @@ new(Width,Height,Px,Py,Outline,TileTypes)->
     Weight = [T || {_,T} <- TileTypes],
     Sum = lists:foldr(fun(X,Y)-> X+Y end, 0,Weight),
     Reg = define_regions(Weight),
-    [{tile,
+    %% [{tile,
+    %%   {pos, X*Px,Y*Py},
+    %%   Outline,
+    %%   element(1,lists:nth(greater_than(rand:uniform(Sum),Reg),TileTypes))} ||
+    %%     X <- lists:seq(1,Width),
+    %%     Y <- lists:seq(1,Height)].
+    [[{tile,
       {pos, X*Px,Y*Py},
       Outline,
       element(1,lists:nth(greater_than(rand:uniform(Sum),Reg),TileTypes))} ||
-        X <- lists:seq(1,Width),
-        Y <- lists:seq(1,Height)].
+         Y <- lists:seq(1,Height)] ||
+        X <- lists:seq(1,Width)]
+        .
+
 
 new_equal_weight(Width,Height,Px,Py,Names) ->
     new(Width,Height,Px,Py,<<"black">>,equal_weight(Names)).

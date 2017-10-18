@@ -11,16 +11,24 @@ function websocketSendPos(pos){
 }
 
 function websocketSendEvent(type,body){
-    var msg = {
-        type:type,
-        body:body,
-        id:clientID,
-        time:Date.now()
+    if(ws.readyState != undefined)
+    if(ws.readyState === ws.OPEN ){
+        var msg = {
+            type:type,
+            body:body,
+            id:clientID,
+            time:Date.now()
+        }
+        ws.send(JSON.stringify(msg));
     }
-    ws.send(JSON.stringify(msg));
 }
 
-function websocketOpen(fun){
+function websocketClose(){
+    console.log("close connection");
+    ws.close();
+}
+
+function websocketOpen(fun,parameters){
     console.log("hello world");
     if ( window.WebSocket) {
          console.log("Browser Supported")
@@ -30,7 +38,6 @@ function websocketOpen(fun){
      }
     ws = new WebSocket("ws://107.170.127.8:11000/websocket");
     ws.onopen = function() {
-        fun();
         websocketSendEvent("req_id","place_holder");
         console.log('Connected');
      };
@@ -41,8 +48,14 @@ function websocketOpen(fun){
                       //req_id:req_id
                      }
          var received_msg = JSON.parse(evt.data);
-         if(received_msg.type == "req_id")
-             req_id(received_msg.id)
+         if(received_msg.type == "req_id"){
+             websocketSendEvent("req_match","")
+             req_id(received_msg.id)}
+         else if (received_msg.type == "create"){
+             console.log(typeof(received_msg.body.tiles));
+             fun(received_msg.body.player,
+                 JSON.parse(received_msg.body.tiles));
+         }
          else if(cases[received_msg.type]){
              cases[received_msg.type].apply(undefined,Object.values(received_msg.body));
         }

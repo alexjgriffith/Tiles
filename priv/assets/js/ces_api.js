@@ -1,294 +1,4 @@
-// Engine
-function CES() {
-    var c2e = {};
-    var e2c = {};
-    var ents = {};
-    var index = 0;
-    var systems = {};
-    var contexts = {};
-    this.viewObj = function(){
-        return {c2e:c2e,
-                e2c:e2c,
-                ents:ents};
-    }
-    this.addEnt = function(){
-        ents[index]={};
-        e2c[index]=[];
-        index += 1;
-        return index-1;
-    };
-    this.removeEnt = function (index){
-        delete ents[index];
-        for(var i in e2c[index]){
-            c2e[e2c[index][i]] =
-                c2e[e2c[index][i]].filter(function(x){return x!=index;})
-        }
-        delete e2c[index];
-    };
-    this.addContext = function(index,context,vals){
-        var cont = contexts[context].apply(undefined,vals);
-        ents[index][context]=cont;
-        e2c[index].push(context);
-        if(c2e[context] == null){
-            c2e[context]=[index];
-        }
-        else{
-            c2e[context].push(index);
-        }
-    }
-    this.removeContext = function(index,context){
-        e2c = e2c[index].filter(function(x) {x!=context});
-        c2e = c2e[context].filter(function(x){x!=ent})
-        delete ents[index][context]
-    }
-    this.defcontext = function(name,fun){
-        contexts[name]=fun;
-    }
-    this.alle = function(context){
-        return c2e[context];
-    }
-    this.allc = function(ent){
-        return ents[ent];
-    }
-    this.defsystem = function(name,fun,deps){
-        // deps need to be contexts
-        systems[name]={fun:fun,depends:deps};
-    }
-    this.applySystem = function(system,index,args){
-        var temp;
-        if(index.length==1){
-            args.reverse().push(ents[index[0]]);
-            args.reverse();
-            fun = systems[system].fun;
-            temp = fun.apply(undefined,args);
-            if(temp!=null)
-                ents[index]=temp;
-        }
-        else if(index.length=2){
-            args.reverse().push(ents[index[1]]);
-            args.push(ents[index[0]]);
-            args.reverse();
-            fun = systems[system].fun;
-            temp = fun.apply(undefined,args);
-            if(temp[0]!=null)
-                ents[index[0]]=temp[0];
-            if(temp[1]!=null)
-                ents[index[1]]=temp[1];
-        }
-    }
-}
-
 // Impl
-
-function contextPos (x,y){
-    return {x:x,y:y};
-}
-
-function contextId (id){
-    return {id:id};
-}
-
-function contextVelocity (x,y){
-    return {x:x,y:y};
-}
-
-function contextBullet(team,range,start){
-    return {team:team,range:range,start:start};
-}
-
-function contextDraw (shape,fillColour,strokeColour, radius){
-    return {shape:shape,
-            fillColour:fillColour,
-            strokeColour:strokeColour,
-            radius:radius};
-}
-
-function contextDirection(x,y){
-    return {x:x,y:y};
-}
-
-function contextRectCollider (x,y,inverted,moveable,mass,event){
-    return {x:x,y:y,inverted:inverted,moveable:moveable,mass:mass,event:event};
-}
-
-function contextPlayer (){
-    return {};
-}
-
-function alive(state){
-    return {state:state};
-}
-
-function contextCircle(radius){
-    return {radius:radius};
-}
-
-function contextExplosion(team,finalRadius){
-    return {team:team,finalRadius:finalRadius};
-}
-
-function contextExpanding(rate){
-    return {rate:rate}
-}
-
-function contextOtherPlayer (){
-    return {};
-}
-
-function contextOtherPlayerLive (){
-    return {};
-}
-
-function contextSimpleAI (lrp){
-    // VERY SIMPLY logic
-    return {lrp:lrp,dir:-1};
-}
-
-function contextRemoteInput (x,y,signal,maxCol){
-    // x and y should be vectors that will
-    // allow for better interpolation
-    return {x:x,y:y,signal:signal};
-}
-
-function systemSendPos (ent){
-    websocketSendPos({pos:ent.pos,
-                      team:ent.team,
-                      alive:ent.alive,
-                      direction:ent.direction,
-                      id:clientID});
-    return ent;
-}
-
-
-function systemMovePlayer (ent,move){
-    ent["pos"].x+=move.x;
-    ent["pos"].y+=move.y;
-    return ent;
-}
-
-function systemSimpleAI(ent,step){
-    var probs = ent.simpleAI;
-    var dir = ent.direction
-    if(Math.random()<probs.lrp){
-        probs.dir = probs.dir*-1
-    }
-    dir = rotate(dir,probs.dir*Math.PI/128)
-    ent = systemMovePlayer(ent,{x:dir.x*3*step,y:dir.y*3*step});
-    ent.direction = dir;
-    return ent;
-}
-
-function systemPlayerDirection(ent,mouse,camera){
-    var mpos=mouse.pos;
-    var pos = ent["pos"];
-    var y = (mpos.y-(pos.y-camera.y+25));
-    var x = (mpos.x-(pos.x-camera.x+25));
-    var mag = Math.sqrt(y*y + x*x)
-    ent.direction.x=x/mag;
-    ent.direction.y=y/mag;
-    return ent;
-}
-
-function systemUpdateBullet(ent,dt,entid){
-    ent.pos.x=ent.pos.x+ent.velocity.x*dt
-    ent.pos.y=ent.pos.y+ent.velocity.y*dt
-    if(Math.abs(ent.bullet.start.x - ent.pos.x) > ent.bullet.range.x ||
-       Math.abs(ent.bullet.start.y - ent.pos.y) > ent.bullet.range.y){
-        c2e.removeEnt(entid);
-        ent=null;
-    }
-    return ent;
-}
-
-function systemUpdateOtherPlayerLive(ent,pos,direction,alive){
-    ent.pos=pos;
-    ent.direction=direction;
-    ent.alive=alive;
-    return ent;
-}
-
-function systemUpdateExplosion(ent,dt,entid){
-    var expand = ent.expanding.rate*dt;
-    ent.circle.radius+=expand
-    ent.draw.radius = ent.circle.radius
-    ent.pos.x-=expand//Math.sqrt(2);
-    ent.pos.y-=expand//Math.sqrt(2);
-    if(ent.circle.radius > ent.explosion.finalRadius){
-        c2e.removeEnt(entid);
-        ent=null;
-    }
-    return ent;
-}
-
-function systemDrawObj (ent,ctx,camera){
-    var draw = ent["draw"];
-    var pos = ent["pos"];
-    ctx.strokeStyle=draw.strokeColour;
-    ctx.fillStyle=draw.fillColour;
-    ctx.beginPath();
-    ctx.arc(pos.x-camera.x+draw.radius,pos.y-camera.y+draw.radius,
-            draw.radius,0,2*Math.PI)
-    ctx.stroke();
-    ctx.fill()
-    return ent;
-}
-
-function systemDeath (ent1,ent2){
-    return systemTriggerCollide(ent1,ent2);
-}
-
-function systemDrawPlayer (ent,ctx,camera,posEnd){
-    var draw = ent["draw"];
-    var pos = ent["pos"];
-    var dir = ent["direction"];
-    var tri = triangle((pos.x-camera.x)+25+20*dir.x, (pos.y-camera.y)+25+20*dir.y,20,20,Math.atan2(dir.y,dir.x));
-    var ttr = trunktriangle((pos.x-camera.x)+25,
-                            (pos.y-camera.y)+25,
-                            50,8000,-10000,Math.atan2(dir.y,dir.x));
-    fillPoly(ctx,ttr,"white");
-    ctx.beginPath();
-    ctx.moveTo(pos.x-camera.x+draw.radius,pos.y-camera.y+draw.radius);
-    ctx.lineTo(posEnd.x,posEnd.y);
-    ctx.strokeStyle="black";
-    ctx.stroke();
-    ctx.strokeStyle=draw.strokeColour;
-    ctx.fillStyle=draw.fillColour;
-    ctx.beginPath();
-    ctx.arc(pos.x-camera.x+draw.radius,pos.y-camera.y+draw.radius,draw.radius,0,2*Math.PI)
-    //ctx.stroke();
-    ctx.fill()
-    ctx.beginPath();
-    ctx.arc(pos.x-camera.x+draw.radius,pos.y-camera.y+draw.radius,draw.radius/1.5,0,2*Math.PI)
-    ctx.strokeStyle="black";
-    ctx.fillStyle="yellow";
-    ctx.stroke();
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(pos.x-camera.x+draw.radius,pos.y-camera.y+draw.radius,draw.radius/2,0,Math.PI/2,false)
-    ctx.lineWidth=4
-    ctx.strokeStyle = "blue";
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(pos.x-camera.x+draw.radius,pos.y-camera.y+draw.radius,draw.radius/2,Math.PI/2,Math.PI,false)
-    ctx.lineWidth=4
-    ctx.strokeStyle = "green";
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(pos.x-camera.x+draw.radius,pos.y-camera.y+draw.radius,draw.radius/2,Math.PI,0,false)
-    ctx.lineWidth=4
-    ctx.strokeStyle = "red";
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.arc(pos.x-camera.x+draw.radius,pos.y-camera.y+draw.radius,draw.radius/4,Math.PI+Math.PI*(-0.1),0-Math.PI*(-0.1),true)
-    ctx.fillStyle = "red";
-    ctx.fill();
-
-    ctx.lineWidth=1
-    fillPoly(ctx,tri,"red");
-    return ent;
-}
-
 var c2e = new CES;
 
 c2e.defcontext("pos",contextPos)
@@ -308,10 +18,17 @@ c2e.defcontext("expanding",contextExpanding)
 c2e.defcontext("circle",contextCircle)
 c2e.defcontext("explosion",contextExplosion)
 c2e.defcontext("id",contextId)
+c2e.defcontext("text",contextText)
+c2e.defcontext("backgroundBox",contextBackgroundBox)
+c2e.defcontext("boundingBox",contextBoundingBox)
+c2e.defcontext("hovered",contextHovered)
+c2e.defcontext("event",contextEvent)
 
 
-
+c2e.defsystem("updateButton",systemUpdateButton,systemUpdateButtonReqs);
+c2e.defsystem("drawButton",systemDrawButton,systemDrawButtonReqs);
 c2e.defsystem("sendPos",systemSendPos,[]);
+c2e.defsystem("sendAngle",systemSendAngle,[]);
 c2e.defsystem("updateBullet",systemUpdateBullet,[])
 c2e.defsystem("updateExplosion",systemUpdateExplosion,[])
 c2e.defsystem("updateOtherPlayerLive",systemUpdateOtherPlayerLive,[])
@@ -330,6 +47,7 @@ c2e.defsystem("playerDirection",systemPlayerDirection,
               [["direction"]]);
 
 // API
+// Need to clean up to remove globals, should only need c2e
 var playerId;
 var bounds;
 var object=[];
@@ -338,14 +56,14 @@ var otherPlayers = [];
 var otherPlayersLive = {};
 
 
-function definePlayer(){
+function definePlayer(Player){
     playerId = c2e.addEnt();
-    c2e.addContext(playerId,"pos",[300,500]);
-    c2e.addContext(playerId,"draw",["circle","red","black",25]);
-    c2e.addContext(playerId,"id",[playerId]);
-    c2e.addContext(playerId,"team",["red"]);
+    c2e.addContext(playerId,"pos",[Player.pos.x,Player.pos.y]);
+    c2e.addContext(playerId,"draw",["circle",Player.colour,"black",25]);
+    c2e.addContext(playerId,"id",[Player.id]);
+    c2e.addContext(playerId,"team",[Player.team]);
     c2e.addContext(playerId,"player",[]);
-    c2e.addContext(playerId,"alive",[true]);
+    c2e.addContext(playerId,"alive",[Player.alive]);
     c2e.addContext(playerId,"direction",[1,0]);
     c2e.addContext(playerId,"collider",[50,50,false,true,100,[]]);
 }
@@ -541,6 +259,20 @@ function clickCreateExplosion(x,y){
     //pos,rate,initialRadius,finalRadius,team
 }
 
+function moveKeyDown(key){
+    var msg = key;
+    websocketSendEvent("keyDown",msg)
+}
+
+function moveKeyUp(key){
+    var msg = key;
+    websocketSendEvent("keyUp",msg)
+}
+
+function sendPlayerAngle(){
+    c2e.applySystem("sendAngle", [playerId],[]);
+}
+
 function sendPlayerPos(){
     c2e.applySystem("sendPos", [playerId],[]);
 }
@@ -574,4 +306,35 @@ function updatePlayerPos(pos,team,alive,direction,id){
         else{
             createOtherPlayerLive(pos,team.x,alive,direction,id[1])
         }}
+}
+
+function createQuickButton(text,event,x,y,h,w){
+    var font = "30px Impact";
+    var hFont = "40px Impact";
+    createMenuButton(text,x,y,h,w,font,hFont,"white","blue",event);
+}
+
+function createMenuButton(text,x,y,h,w,font,hFont,tColour,bgColour,event){
+    var temp = c2e.addEnt();
+    c2e.addContext(temp,"text",[text,text,font,hFont,tColour,tColour]);
+    c2e.addContext(temp,"backgroundBox",[bgColour,bgColour,null,"black",null,5]);
+    c2e.addContext(temp,"boundingBox",[w,h]);
+    c2e.addContext(temp,"event",[event]);
+    c2e.addContext(temp,"hovered",[false]);
+    c2e.addContext(temp,"pos",[x,y]);
+}
+
+function updateButtons(mpos,click,args){
+    var buttons = c2e.alle("contextHovered");
+    for(i in buttons){
+        c2e.applySystem("updateButton",[buttons[i]],[mpos,click,args]);
+    }
+}
+
+function drawButtons(contexts){
+    var buttons = c2e.alle("contextHovered");
+    for(i in buttons){
+        c2e.applySystem("drawButton",[buttons[i]],[contexts]);
+    }
+
 }

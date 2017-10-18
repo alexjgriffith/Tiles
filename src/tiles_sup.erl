@@ -4,9 +4,10 @@
 -export([init/1]).
 
 start_link() ->
-    ChildSpecs = [{state,
-                   {tiles_state,start_link,[[]]},
-                   permanent,brutal_kill,worker,[tiles_state]},
+    ChildSpecs = [
+                  {match_making,
+                   {tiles_match_making,start_link,[]},
+                   permanent,brutal_kill,worker,[tiles_match_making]},
                   {tiles_serve_id,
                    {tiles_serve_id,start_link,[]},
                    permanent,brutal_kill,worker,[tiles_serve_id]},

@@ -8,7 +8,7 @@
 ]).
 
 init(Req, State) ->
-    {cowboy_websocket, Req, State ,#{idle_timeout => 60000}}.
+    {cowboy_websocket, Req, State ,#{idle_timeout => 10000}}.
 
 handle(Req, State) ->
     lager:info("Request not expected: ~p~n", [Req]),
@@ -17,17 +17,17 @@ handle(Req, State) ->
     {ok, Req2, State}.
 
 websocket_init(_State) ->
-    Id = tiles_bcast:join_feed(self()),
-    {ok, Id, hibernate}.
+    %%Id = tiles_bcast:join_feed(self()),
+    Id = tiles_connection_state:start_link([self()]),
+    {ok, {Id,[],[]}, hibernate}.
 
-websocket_handle({text, EJSON},  State) ->
+websocket_handle({text, EJSON},  State={Id,_,Match}) ->
     Message = tiles_json:to_message(EJSON),
-    lager:info("Message: ~p ~n", [EJSON]),
-    lager:info("Message: ~p ~p~n", [Message,self()]),
-    case tiles_json:process(Message) of
-        {text,Resp}->
-            EResp = tiles_json:to_json(Resp),
-            debug("Response: ~p ~p~n", [Resp,self()]),
+    %% io:format("message: ~p~n",[Message]),
+    Resp = tiles_connection_state:process_message(Id,Message,Match),
+    case Resp of
+        {respond,Message2}->
+            EResp = tiles_json:to_json(Message2),
             {reply, {text, EResp},  State, hibernate };
         ok -> {ok, State, hibernate };
         _ -> {ok, State, hibernate }
@@ -35,9 +35,23 @@ websocket_handle({text, EJSON},  State) ->
 websocket_handle(_Any,  State) ->
     {reply, {text, << "whut?">>}, State, hibernate}.
 
+websocket_info({match_found,Match,Id,Mid,MSG}, {State,_,_}) ->
+    io:format("match found ~n"),
+    %%MSG = {message, <<"match">>, <<"1">>,<<"Id">>,tiles_json:jtime() },
+    Resp = tiles_json:to_json(MSG),
+    %% io:format("~p~n",[Resp]),
+    {reply,{text,Resp },{State,Mid,Match}, hibernate};
+websocket_info({no_match,FSM_Pid,Player},State)->
+    tiles_match_making:create_match(),
+    tiles_connection_state:find_match(FSM_Pid,Player),
+    {ok,State,hibernate};
 websocket_info({broadcast,Msg}, State) ->
-    debug("websocket info: ~p~n",[self()]),
+    io:format("Resp: ~p~n",[Msg]),
     Resp = tiles_json:to_json(Msg),
+    {reply,{text,Resp},State, hibernate};
+websocket_info({to_encode,Msg}, State) ->
+    io:format("Resp: ~p~n",[Msg]),
+    Resp = jiffy:encode(Msg),
     {reply,{text,Resp},State, hibernate};
 websocket_info({test,Msg}, State) ->
     debug("websocket info: ~p~n",[self()]),
@@ -49,13 +63,19 @@ websocket_info({test,Msg}, State) ->
               tiles_json:jtime()}),
     {reply,{text,Resp},State, hibernate};
 websocket_info(_Info, State) ->
-    debug("websocket info: ~p~n",[self()]),
+    debug("bad arg websocket info: ~p~n",[_Info]),
     {ok, State, hibernate}.
 
-terminate(_Reason, _Req, State) ->
-    debug("websocket closed: ~p ~p~n",[self(),State]),
-    tiles_bcast:leave_feed(State),
+terminate(_Reason, _Req, {_,[],[]}) ->
+    debug("websocket closed: ~p ~p~n",[_Reason,_Reason]),
+    ok;
+terminate(_Reason, _Req, {_,Feed,Match}) ->
+    debug("websocket closed: ~p ~p~n",[_Reason,Feed]),
+    tiles_match:leave(Match,Feed),
     ok.
+
+
+
 
 debug(Str,Mix) ->
     io:format(Str,Mix).
