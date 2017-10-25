@@ -1,0 +1,15 @@
+#+TITLE: Tiles App V0.1.0
+#+AUTHOR: Alexander Griffith
+
+* For Alpha 0.2.0
+** Client
+1. [ ] Refactor JS to use modules
+2. [ ] Add colour variations options
+3. [ ] Implement NPCs
+4. [ ] Reprogramable controls
+
+** Server
+1. [ ] Add player persistance mnesia table
+2. [ ] Implement protobuf for websockets
+3. [ ] Further develop simple setup api (JSON)
+     - check out the feasbility of builiding a rest handler

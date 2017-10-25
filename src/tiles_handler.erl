@@ -35,19 +35,21 @@ websocket_handle({text, EJSON},  State={Id,_,Match}) ->
 websocket_handle(_Any,  State) ->
     {reply, {text, << "whut?">>}, State, hibernate}.
 
+
+%% need to encode the json to save bandwidth
 websocket_info({match_found,Match,Mid,MSG}, {State,_,_}) ->
     Resp = tiles_json:to_json(MSG), %% need to clean this up!
     {reply,{text,Resp },{State,Mid,Match}, hibernate};
 websocket_info({no_match,FSM_Pid,Player},State)->
     tiles_match_making:create_match(),
-    tiles_connection_state:find_match(FSM_Pid,Player),
+    tiles_connection_state:find_open_match(FSM_Pid,Player),
     {ok,State,hibernate};
 websocket_info({broadcast,Msg}, State) ->
     %%io:format("Resp: ~p~n",[Msg]),
     Resp = tiles_json:to_json(Msg),
     {reply,{text,Resp},State, hibernate};
 websocket_info({to_encode,Msg}, State) ->
-    io:format("Resp: ~p~n",[Msg]),
+    %%io:format("Resp: ~p~n",[Msg]),
     Resp = jiffy:encode(Msg),
     {reply,{text,Resp},State, hibernate};
 websocket_info({test,Msg}, State) ->

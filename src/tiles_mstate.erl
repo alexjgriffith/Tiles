@@ -19,14 +19,14 @@
 
 
 -export([capacity/1,clear_match/1,eh/1,id/1,tiles/1,state_to_proplist/1,state/1,
-         add_player/2,update_player/3,remove_player/2,update_objects/2,
+         add_player/3,update_player/3,remove_player/2,update_objects/2,
          players/1,available_slot/1]).
 
 start_link(Id,Limit)->
     gen_server:start_link(?MODULE,[Id,Limit],[]).
 
-add_player(Pid,Player) ->
-    gen_server:call(Pid,{add_player,Player}).
+add_player(Pid,Player,Index) ->
+    gen_server:call(Pid,{add_player,Player,Index}).
 
 available_slot(Pid)->
     gen_server:call(Pid,available_slot).
@@ -77,23 +77,30 @@ handle_cast({update_player, Id,Player},State=#match{players=Players}) ->
 handle_cast(_Msg,State) ->
     {noreply,State}.
 
-handle_call({add_player,Player},_From,State=#match{players=Players,limit=L,next_available_id=Id}) ->
+handle_call({add_player,Player,Id},_From,State=#match{players=Players,limit=L,next_available_id=Id}) ->
     case L==Id of
         true ->
             io:format("ouversized match"),
             {reply,failed,State};
         false ->
+            io:format("player id ~p ~n",[Id]),
             Players2 = [{Id,Player} | Players],
             State2=State#match{players=Players2},
             NextId=next_id(State2),
             io:format("Next ID: ~p~n", [NextId]),
             {reply,{ok,NextId},State2#match{next_available_id=NextId}}
     end;
-handle_call({remove_player, Id},_From,State=#match{players=Players,limit=L}) ->
+handle_call({add_player,_,GId},_From,State=#match{next_available_id=Id}) ->
+    io:format("failed to add player id missmatch ~p ~p~n",[GId,Id]),
+    {reply,failed,State};
+
+handle_call({remove_player, Id},_From,State=#match{players=Players,limit=L,id=MatchNumber}) ->
     Players2=proplists:delete(Id,Players),
+    io:format("id: ~p~n",[Id]),
+    io:format("players: ~p~n",[Players2]),
     State2 = State#match{players=Players2},
     NextId= next_id(State2),
-    tiles_match_making:update_match_index(self(),NextId,L),
+    tiles_match_making:update_match_index(MatchNumber,self(),NextId,L),
     {reply,ok,State2#match{next_available_id=NextId}};
 handle_call(return_eh, _From, State=#match{eh=Ret}) ->
     {reply,Ret,State};
