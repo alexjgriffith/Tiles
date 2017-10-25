@@ -35,18 +35,15 @@ websocket_handle({text, EJSON},  State={Id,_,Match}) ->
 websocket_handle(_Any,  State) ->
     {reply, {text, << "whut?">>}, State, hibernate}.
 
-websocket_info({match_found,Match,Id,Mid,MSG}, {State,_,_}) ->
-    io:format("match found ~n"),
-    %%MSG = {message, <<"match">>, <<"1">>,<<"Id">>,tiles_json:jtime() },
-    Resp = tiles_json:to_json(MSG),
-    %% io:format("~p~n",[Resp]),
+websocket_info({match_found,Match,Mid,MSG}, {State,_,_}) ->
+    Resp = tiles_json:to_json(MSG), %% need to clean this up!
     {reply,{text,Resp },{State,Mid,Match}, hibernate};
 websocket_info({no_match,FSM_Pid,Player},State)->
     tiles_match_making:create_match(),
     tiles_connection_state:find_match(FSM_Pid,Player),
     {ok,State,hibernate};
 websocket_info({broadcast,Msg}, State) ->
-    io:format("Resp: ~p~n",[Msg]),
+    %%io:format("Resp: ~p~n",[Msg]),
     Resp = tiles_json:to_json(Msg),
     {reply,{text,Resp},State, hibernate};
 websocket_info({to_encode,Msg}, State) ->
@@ -69,13 +66,10 @@ websocket_info(_Info, State) ->
 terminate(_Reason, _Req, {_,[],[]}) ->
     debug("websocket closed: ~p ~p~n",[_Reason,_Reason]),
     ok;
-terminate(_Reason, _Req, {_,Feed,Match}) ->
+terminate(_Reason, _Req, {State,Feed,_Match}) ->
     debug("websocket closed: ~p ~p~n",[_Reason,Feed]),
-    tiles_match:leave(Match,Feed),
+    tiles_connection_state:disconnect(State),
     ok.
-
-
-
 
 debug(Str,Mix) ->
     io:format(Str,Mix).

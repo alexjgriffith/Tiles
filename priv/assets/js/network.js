@@ -1,9 +1,11 @@
 var ws = new Object;
 var clientID = 0;
+//var address = "ws://sadcod.com/websocket"
+var address = "ws://skyisles.ca:11000/websocket"
 
 function websocketPing(){
      ws.send("hello world!");
-     console.log('Message sent');
+     //console.log('Message sent');
 }
 
 function websocketSendPos(pos){
@@ -24,35 +26,47 @@ function websocketSendEvent(type,body){
 }
 
 function websocketClose(){
-    console.log("close connection");
+    //console.log("close connection");
     ws.close();
 }
 
-function websocketOpen(fun,parameters){
-    console.log("hello world");
+function websocketOpen(fun,params){
+    //console.log("hello world");
     if ( window.WebSocket) {
-         console.log("Browser Supported")
+         //console.log("Browser Supported")
      }
      else {
          alert("Browser Not Suported");
      }
-    ws = new WebSocket("ws://107.170.127.8:11000/websocket");
+    ws = new WebSocket(address);
     ws.onopen = function() {
-        websocketSendEvent("req_id","place_holder");
-        console.log('Connected');
+        if(params.name)
+            websocketSendEvent("req_id",params.name);
+        else
+            websocketSendEvent("req_id","guest");
+        //console.log('Connected');
      };
      ws.onmessage = function (evt){
          var cases = {createExplosion:createExplosion,
                       createBullet:createBullet,
-                      updatePlayerPos:updatePlayerPos
+                      updatePlayerPos:updatePlayerPos,
+                      damaged:damaged,
+                      dead:dead,
+                      keyUp:keyUp,
+                      keyDown:keyDown,
+                      colourChanged:colourChanged,
+                      turned:turned,
+                      exitMatch:exitMatch
                       //req_id:req_id
                      }
          var received_msg = JSON.parse(evt.data);
          if(received_msg.type == "req_id"){
-             websocketSendEvent("req_match","")
+             if(params.match)
+                 websocketSendEvent("req_specific_match",params.match);
+             else
+                 websocketSendEvent("req_match","")
              req_id(received_msg.id)}
          else if (received_msg.type == "create"){
-             console.log(typeof(received_msg.body.tiles));
              fun(received_msg.body.player,
                  JSON.parse(received_msg.body.tiles));
          }
@@ -62,11 +76,30 @@ function websocketOpen(fun,parameters){
      };
     ws.onclose = function()
     {
-        console.log('Connection closed');
+        //console.log('Connection closed');
     };
 }
 
 function req_id(id){
-    console.log(id)
+    //console.log(id)
     clientID=id;
 }
+
+
+var xhttp = new XMLHttpRequest();
+xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        // Typical action to be performed when the document is ready:
+        var cases ={matches:matches};
+        var received_msg = JSON.parse(xhttp.responseText);
+        //console.log(received_msg);
+        if(cases[received_msg.type]){
+             cases[received_msg.type](received_msg.body);
+        }
+    }
+};
+
+function match_api(endpoint){
+    xhttp.open("GET", "/api/v0/match?"+ endpoint, true);
+    xhttp.send(null);
+};

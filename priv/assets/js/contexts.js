@@ -2,6 +2,10 @@ function contextPos (x,y){
     return {x:x,y:y};
 }
 
+function contextMoveKeys (){
+    return {keys:[]};
+}
+
 function contextId (id){
     return {id:id};
 }
@@ -14,11 +18,15 @@ function contextBullet(team,range,start){
     return {team:team,range:range,start:start};
 }
 
-function contextDraw (shape,fillColour,strokeColour, radius){
+function contextDraw (shape,strokeColour, radius){
     return {shape:shape,
-            fillColour:fillColour,
+            damageDt:200,
+            timeDamage:0,
+            damageFlag:false,
+            damage:"yellow",
             strokeColour:strokeColour,
-            radius:radius};
+            radius:radius,
+            colour:"black"};
 }
 
 function contextDirection(x,y){
@@ -33,8 +41,8 @@ function contextPlayer (){
     return {};
 }
 
-function alive(state){
-    return {state:state};
+function contextAlive(alive){
+    return {alive:alive};
 }
 
 function contextCircle(radius){
@@ -78,7 +86,7 @@ function contextText (text,hText,font,hFont,colour,hColour){
 }
 
 
-function contextBackgroundBox (colour,hColour,stroke,strokeHighlight,
+function contextBackgroundBox (colour,hColour,stroke,hStroke,
                                lineWidth,hLineWidth){
     // x and y should be vectors that will
     // allow for better interpolation
@@ -100,4 +108,49 @@ function contextHovered(state){
 
 function contextEvent(fun){
     return {fun:fun};
+}
+
+function contextHoverEvent(fun){
+    return {fun:fun};
+}
+
+function contextLoadMenu(){
+    return {};
+}
+
+function contextLoadingScreen(){
+    return {};
+}
+
+function contextMatch(){
+    return {};
+}
+
+function contextColour(colour){
+    return{colour:colour};
+}
+
+function contextHealth(health){
+    return{health:health,max:health};
+}
+
+function contextPower(red,blue,green){
+    return {red:red,blue:blue,green:green,max:10};
+}
+
+function contextPowerBuildUp(dt){
+    var date = new Date;
+    return {list:[],time:date.getTime(),dt:dt};
+}
+
+function contextTeam(team){
+    return {team:team};
+}
+
+function contextDamage(damage){
+    return {damage:damage};
+}
+
+function contextMatchlist(){
+    return {};
 }

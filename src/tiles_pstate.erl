@@ -1,7 +1,7 @@
 -module(tiles_pstate).
 -behaviour(gen_server).
 
--export([start_link/5]).
+-export([start_link/6]).
 
 -export([init/1,handle_cast/2,handle_call/3,handle_info/2,
         terminate/2,code_change/3]).
@@ -19,14 +19,15 @@
                pos,
                dir,
                colour,
-               team
+               team,
+               id
               }).
 
 -export([move_key_down/2,move_key_up/2,state/1]).
 
 %% API
-start_link(Pos,Dir,Colour,Team,Match)->
-    gen_server:start_link(?MODULE,[Pos,Dir,Colour,Team,Match],[]).
+start_link(Pos,Dir,Colour,Team,Match,Id)->
+    gen_server:start_link(?MODULE,[Pos,Dir,Colour,Team,Match,Id],[]).
 
 move_key_down(Pid,Key)->
     gen_server:call(Pid,{key_down,Key}).
@@ -40,15 +41,22 @@ state(Pid)->
 
 %% Callbacks
 
-init([Pos,Dir,Colour,Team,Match]) ->
+init([Pos,Dir,Colour,Team,Match,Id]) ->
+    Power = case Colour of
+                <<"red">> -> [{red,10},{blue,0},{green,0}];
+                <<"blue">> -> [{red,0},{blue,10},{green,0}];
+                <<"green">> -> [{red,0},{blue,0},{green,10}]
+            end,
     {ok,#state{expLast=tiles_json:jtime(),
                bulLast=tiles_json:jtime(),
                health=10,
                pos=Pos,
+               power=Power,
                dir=Dir,
                colour=Colour,
                team=Team,
-               match = Match}}.
+               match = Match,
+               id =Id}}.
 
 handle_cast(_Msg,State) ->
     {noreply,State}.
@@ -60,10 +68,11 @@ handle_call(request_state ,_From,State=#state{match=Match,
                                               pos=Pos,
                                               dir=Dir,
                                               colour=Colour,
-                                              team=Team}) ->
+                                              team=Team,
+                                              id=Id}) ->
     Msg = {[{match,Match},{alive,Alive},{health,Health},
             {power,{Power}},{pos,{Pos}},{dir,{Dir}},{colour,Colour},
-            {team,Team}]},
+            {team,Team},{id,Id}]},
     {reply,Msg,State};
 handle_call({key_down,Key},_From,State=#state{keys=Keys}) ->
     case proplists:get_value(Key,Keys) of

@@ -25,11 +25,17 @@ function icollider(ent1,ent2){
 }
 
 function systemTriggerCollide(ent1,ent2,event){
-    var collide = colldier(ent1,ent2);
+    var collide = collider(ent1,ent2);
     var retvar =[ent1,ent2];
-    if(collide)
+    if(collide.col)
         retvar = event(ent1,ent2,collide.overlap);
     return retvar;
+}
+
+function bulletEvent(player,bullet,overlap){
+    //console.log("hit");
+    rets = systemDamage(player,bullet);
+    return rets;
 }
 
 function deathTrigger(ent1,ent2,overlap){
@@ -51,6 +57,7 @@ function systemInverseCollide (ent1,ent2){
     if(collide.col &&  !
        ent2.collider.moveable &&
        ent1.collider.moveable){
+        //console.log(ent1)
         if(xl<0)
             ent1.pos.x-=xl
         else if(xu<0)

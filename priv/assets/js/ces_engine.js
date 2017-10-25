@@ -62,7 +62,9 @@ function CES() {
             fun = systems[system].fun;
             temp = fun.apply(undefined,args);
             if(temp!=null)
-                ents[index]=temp;
+                ents[index[0]]=temp;
+            else
+                this.removeEnt(index[0]);
         }
         else if(index.length=2){
             args.reverse().push(ents[index[1]]);
@@ -72,8 +74,13 @@ function CES() {
             temp = fun.apply(undefined,args);
             if(temp[0]!=null)
                 ents[index[0]]=temp[0];
+            else
+                this.removeEnt(index[0]);
             if(temp[1]!=null)
                 ents[index[1]]=temp[1];
+            else
+                this.removeEnt(index[1]);
+
         }
     }
 }
