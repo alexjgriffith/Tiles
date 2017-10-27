@@ -88,10 +88,12 @@ var object=[];
 var otherPlayersLive={};
 var otherPlayers=[];
 
-function definePlayer(Player){
+/* start fixing here */
+function definePlayer(Player,colours){
     playerId = c2e.addEnt();
     c2e.addContext(playerId,"pos",[Player.pos.x,Player.pos.y]);
-    c2e.addContext(playerId,"draw",["circle","black",25]);
+    //c2e.addContext(playerId,"draw",["circle","black",25]);
+    addDraw(playerId,"circle","black",25,colours)
     c2e.addContext(playerId,"colour",[Player.colour])
     c2e.addContext(playerId,"power",[Player.power.red,
                                      Player.power.blue,
@@ -618,4 +620,17 @@ function createPlayerGrid(ctx,players,event,hEvent){
 
         }
     }
+}
+
+
+function addDraw(id,shape,strokeColour,radius,colours){
+    if(colours)
+        c2e.addContext(id,"draw",
+                       [shape,strokeColour,radius,colours.r,olours.g,
+                        colours.b,colours.k,colours.w]);
+    else
+        c2e.addContext(id,"draw",
+                       [shape,strokeColour,radius,"red","green",
+                        "blue","black","white"]);
+    return id;
 }

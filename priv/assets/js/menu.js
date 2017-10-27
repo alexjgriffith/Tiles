@@ -63,7 +63,7 @@ function loadMenu (ctx){
                       ctx.canvas.height/2+35);
     createQuickButton("Sign In",signin,signinHover,ctx.canvas.width/2,
                       ctx.canvas.height/2+95);
-    createQuickButton("About",about,signinHover,ctx.canvas.width/2,
+    createQuickButton("Options",about,signinHover,ctx.canvas.width/2,
                       ctx.canvas.height/2+155);
     menu={terminate:false,
           type:"menu",

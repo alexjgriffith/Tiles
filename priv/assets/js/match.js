@@ -1,10 +1,14 @@
-function initMatch(ctx,player,tiles){
+/*
+switch all views to require params
+*/
+
+function initMatch(ctx,params,player,tiles){
     var game;
     var date;
     var x=ctx.canvas.width,y=ctx.canvas.height;
     ctx.canvas.style.cursor="none"
     //console.log(player);
-    definePlayer(player);
+    definePlayer(player,params.colours);
     game = {
         type:"match",
         terminate:false,
