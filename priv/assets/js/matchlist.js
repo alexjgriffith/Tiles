@@ -1,9 +1,9 @@
 function matchlistWrapper(matches){
     //console.log(matches);
-    return function(ctx) {matchlist(ctx,matches)};
+    return function(ctx,params) {matchlist(ctx,params,matches)};
 }
 
-function matchlist(ctx,matches){
+function matchlist(ctx,params,matches){
     var game;
     var time = (new Date).getTime();
     var matchHover =
@@ -40,7 +40,7 @@ function matchlist(ctx,matches){
                 game.nextState=initLoading;
                 game.terminate=true;
                 //console.log("new match")
-                websocketOpen(matchFunction(ctx),params)
+                websocketOpen(matchFunction(ctx,game.params),params)
                 return game;});
         };}
     var newMatch = function(params){
@@ -52,6 +52,7 @@ function matchlist(ctx,matches){
     game={type:"matchlist",
           terminate:false,
           nextState:initLoading,
+          params:params,
           cleanup:clearMatchlist,
           matches:matches,
           requestFrequency:5000,

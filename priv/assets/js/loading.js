@@ -1,16 +1,18 @@
-function initLoading(ctx){
+function initLoading(ctx,params){
     var manu;
     var date = new Date;
     ctx.canvas.style.cursor="none"
-    //console.log("init loading")
+    if(params==null || params == undefined )
+        console.log("Error: Params Not Initializes")
     menu={
         type:"loading",
         terminate:false,
-          matches:{number:0,
-                   list:{}},
-          nextState:function(){},
-          cleanup:clearLoadingScreen,
-          note:""};
+        params:params,
+        matches:{number:0,
+                 list:{}},
+        nextState:function(){},
+        cleanup:clearLoadingScreen,
+        note:""};
     gameloop(menu,evalLoading,drawLoading,ctx,date.getTime(),frames);
 }
 

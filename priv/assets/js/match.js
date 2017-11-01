@@ -2,17 +2,27 @@
 switch all views to require params
 */
 
-function initMatch(ctx,params,player,tiles){
+function initMatch(ctx,params,tiles,player){
     var game;
     var date;
     var x=ctx.canvas.width,y=ctx.canvas.height;
+    //console.log(params);
+    if(params==null || params == undefined )
+        console.log("Error: Params Not Initializes")
+
     ctx.canvas.style.cursor="none"
     //console.log(player);
     definePlayer(player,params.colours);
+    var findColour = function(colourIn){ // hack
+        var swapColour={red:"team1",blue:"team2",green:"team3",black:"dead",
+                        yellow:"hitExp",white:"behind"};
+
+        return params.colours[swapColour[colourIn]];};
     game = {
         type:"match",
         terminate:false,
-        nextState:function(ctx){loadMenu(ctx)},
+        nextState:loadMenu,
+        params:params,
         cleanup:clearMatch,
         version:"0.1",
         fps:[30,30,30,30,30,30,30,30,30,30,
@@ -28,9 +38,9 @@ function initMatch(ctx,params,player,tiles){
         playerAlive:true,
         tileSize:{x:75,y:75},
         camera:{x:0,y:0},
-        types:{grass:{colour:"green"},
-               earth:{colour:"red"},
-               water:{colour:"blue"}},
+        types:{grass:{colour:findColour("green")},
+               earth:{colour:findColour("red")},
+               water:{colour:findColour("blue")}},
         dim:{x:x,y:y},
         ces:c2e // this is how it should be done for the api
     }
@@ -151,6 +161,7 @@ function eval(game,inputs,ctx, dt){
     }
 
     game = checkForEvents(game);
+    websocketPing();
     return game;
 }
 

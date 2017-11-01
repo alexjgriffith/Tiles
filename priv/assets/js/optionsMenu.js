@@ -10,6 +10,24 @@ red, green, blue, black, white
    draw colours
 3. Add colour option to options menu
 
+
+A draw queue may be a better option than what we have currently
+
+rather than calling draw functions directly you will push shapes
+dimensions and colours to a draw queue, which is colour aware,
+rather than having these spread all over the code base
+
+eg
+"circle" 100 100 50 "colourA"
+draws a simple circle, red is mapped to whichever colour the user
+has selected for colourA
+each of these will be systems, called in the draw cycle,
+these systems can be kept seperate from the main body of systems
+eg drawCircle -> in drawlibrary
+drawPlayer ~> drawCircle + drawCircle + drawTriangle + drawArch + drawArch + draw Arch
+-> in Player or Global set of systems
+
+// slots available is broken
 */
 
 function initOptionMenu(ctx){

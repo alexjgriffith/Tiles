@@ -18,7 +18,7 @@ function contextBullet(team,range,start){
     return {team:team,range:range,start:start};
 }
 
-function contextDraw (shape,strokeColour,radius,r,g,b,k,w){
+function contextDraw (shape,strokeColour,radius,team1,team2,team3,dead,pointer,hitExp,accent,behind){
     return {shape:shape,
             damageDt:200,
             timeDamage:0,
@@ -27,11 +27,14 @@ function contextDraw (shape,strokeColour,radius,r,g,b,k,w){
             strokeColour:strokeColour,
             radius:radius,
             colour:"black",
-            r=r,
-            g=g,
-            b=b,
-            k=k,
-            w=w};
+            team1:team1,
+            team2:team2,
+            team3:team3,
+            dead:dead,
+            pointer:pointer,
+            hitExp:hitExp,
+            accent:accent,
+            behind:behind};
 }
 
 function contextDirection(x,y){

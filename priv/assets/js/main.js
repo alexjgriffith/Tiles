@@ -23,9 +23,17 @@ function main(){
                                 false);
     document.addEventListener("keyup",
                                 function(e){keyboard(e,"up")},
-                                false);
-
-    loadMenu(ctx);
+                              false);
+    var colours={team1:"red",team2:"blue",team3:"green",
+             dead:"black",pointer:"black",hitExp:"yellow",
+             accent:"yellow",behind:"white"}
+    colours.team1="#375e97";
+    colours.team2="#fb6542";
+    colours.team3="#3f681c";
+    colours.hitExp="#ffbb00";
+    colours.accent="#ffbb00";
+    params={_atest:"",colours:colours};
+    loadMenu(ctx,params);
 }
 
 function checkForEvents(game){
@@ -41,13 +49,13 @@ function checkForEvents(game){
 //     };
 // };
 
-function matchFunction(ctx){
-    return function(tiles,player){
+function matchFunction(ctx,params){
+    return function(player,tiles){
         events.push(function(game){
             game.terminate=true;
-            game.nextState=function(ctx){
+            game.nextState=function(ctx,params){
                 //console.log("call match");
-                initMatch(ctx,tiles,player)
+                initMatch(ctx,params,tiles,player);
             };
             return game;
         });};}
@@ -58,7 +66,7 @@ function gameloop (game,eval,draw,ctx,time,dt){
     game = eval(game,inputs,ctx,dt);
     if(game.terminate){
         game.cleanup();
-        game.nextState(ctx);
+        game.nextState(ctx,game.params);
         return -1;
     }
     draw(game,ctx);

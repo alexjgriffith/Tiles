@@ -1,10 +1,13 @@
 var ws = new Object;
 var clientID = 0;
+var lognet={};
+lognet.rec=false; // log all received ws messages
 //var address = "ws://sadcod.com/websocket"
-var address = "ws://skyisles.ca:11000/websocket"
+//var address = "ws://skyisles.ca:11000/websocket"
+var address = "ws://107.170.127.8:11000/websocket"
 
 function websocketPing(){
-     ws.send("hello world!");
+    websocketSendEvent("message","hello world!");
      //console.log('Message sent');
 }
 
@@ -60,6 +63,9 @@ function websocketOpen(fun,params){
                       //req_id:req_id
                      }
          var received_msg = JSON.parse(evt.data);
+         if(lognet.rec==true){
+             console.log("V10 Log: Message Rec: " + evt.data)
+         }
          if(received_msg.type == "req_id"){
              if(params.match)
                  websocketSendEvent("req_specific_match",params.match);

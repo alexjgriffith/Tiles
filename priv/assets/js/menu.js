@@ -33,9 +33,12 @@ function matches(body){
         return game;});
 }
 
-function loadMenu (ctx){
+function loadMenu (ctx,params){
     var manu;
     var date = new Date;
+    if(params==null || params == undefined )
+        console.log("Error: Params Not Initializes")
+
     var match = function(params){
         //console.log("new match")
         //websocketOpen(matchFunction(ctx),params)
@@ -67,6 +70,7 @@ function loadMenu (ctx){
                       ctx.canvas.height/2+155);
     menu={terminate:false,
           type:"menu",
+          params:params,
           //nextState:initLoading,
           nextState:matchlistWrapper({number:0,list:{}}),
           cleanup:clearLoadMenu,

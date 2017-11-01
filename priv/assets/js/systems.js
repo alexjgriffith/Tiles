@@ -233,7 +233,8 @@ function systemUpdateExplosion(ent,dt,entid){
 function systemDrawObj (ent,ctx,camera){
     var draw = ent["draw"];
     var pos = ent["pos"];
-    var fillColour = ent["colour"].colour;
+    console.log(ent["colour"].colour)
+    var fillColour = ent["colour"].colour; // by this point the colour should be right
     ctx.strokeStyle=draw.strokeColour;
     ctx.fillStyle=fillColour;
     ctx.beginPath();
@@ -250,7 +251,20 @@ function systemDeath (ent1,ent2){
 
 function systemDrawPlayer (ent,ctx,camera,posEnd){
     var draw = ent["draw"];
-    var fillColour= ent["colour"].colour;
+    // to red blue green yellow and black have been removed
+    // hack, need to replace when all reference
+    var findColour = function(colourIn){
+        var swapColour={red:"team1",blue:"team2",green:"team3",black:"dead",
+                        yellow:"hitExp",white:"behind"};
+        return ent.draw[swapColour[colourIn]];};
+    // replace red green blue, with team_1 ... team_3
+    // yellow-> explosion
+    // yellow-> accentColour
+    // black -> dead
+    // black -> strokeColour
+    // black -> lineColour
+
+    var fillColour=findColour(ent["colour"].colour);
     var pos = ent["pos"];
     var dir = ent["direction"];
     var health = ent["health"];
@@ -260,11 +274,13 @@ function systemDrawPlayer (ent,ctx,camera,posEnd){
     var ttr = trunktriangle((pos.x-camera.x)+25,
                             (pos.y-camera.y)+25,
                             50,8000,-10000,Math.atan2(dir.y,dir.x));
-    fillPoly(ctx,ttr,"white");
+    // Tail
+    fillPoly(ctx,ttr,findColour("white"));
     ctx.beginPath();
+    // Pointer
     ctx.moveTo(pos.x-camera.x+draw.radius,pos.y-camera.y+draw.radius);
     ctx.lineTo(posEnd.x,posEnd.y);
-    ctx.strokeStyle="black";
+    ctx.strokeStyle=findColour("black");
     ctx.stroke();
     ctx.strokeStyle=draw.strokeColour;
     ctx.fillStyle=fillColour;
@@ -275,29 +291,28 @@ function systemDrawPlayer (ent,ctx,camera,posEnd){
     ctx.fill()
     ctx.beginPath();
     ctx.arc(pos.x-camera.x+draw.radius,pos.y-camera.y+draw.radius,draw.radius/1.5,0,2*Math.PI)
-    ctx.strokeStyle="black";
-    ctx.fillStyle="yellow";
-    ctx.stroke();
+    ctx.fillStyle=findColour("yellow");
+    //ctx.stroke();
     ctx.fill();
     ctx.beginPath();
     ctx.arc(pos.x-camera.x+draw.radius,pos.y-camera.y+draw.radius,draw.radius/2,
             0,Math.PI*2*power.blue/power.max,false)
     ctx.lineWidth=4
-    ctx.strokeStyle = "blue";
+    ctx.strokeStyle = findColour("blue");
     ctx.stroke();
     ctx.beginPath();
     ctx.arc(pos.x-camera.x+draw.radius,pos.y-camera.y+draw.radius,draw.radius/2,
             Math.PI*2*power.blue/power.max,
             Math.PI*2*(power.green+power.blue)/power.max,false)
     ctx.lineWidth=4
-    ctx.strokeStyle = "green";
+    ctx.strokeStyle = findColour("green");
     ctx.stroke();
     ctx.beginPath();
     ctx.arc(pos.x-camera.x+draw.radius,pos.y-camera.y+draw.radius,draw.radius/2,
             Math.PI*2*(power.blue+ power.green)/power.max,
             Math.PI*2*(power.red+power.green+power.blue)/power.max,false)
     ctx.lineWidth=4
-    ctx.strokeStyle = "red";
+    ctx.strokeStyle = findColour("red");
     ctx.stroke();
 
     ctx.beginPath();

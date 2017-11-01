@@ -91,6 +91,7 @@ var otherPlayers=[];
 /* start fixing here */
 function definePlayer(Player,colours){
     playerId = c2e.addEnt();
+    console.log(Player)
     c2e.addContext(playerId,"pos",[Player.pos.x,Player.pos.y]);
     //c2e.addContext(playerId,"draw",["circle","black",25]);
     addDraw(playerId,"circle","black",25,colours)
@@ -126,11 +127,18 @@ function defineOtherPlayer(team,x,y,inputType,inputArgs){
 
 function createBullet(uid,pos,velocity,range,team,colour,matchid){
     var temp = c2e.addEnt();
+    // Hack has to be called in an env with params.colours defined!!
+    //
+    var findColour = function(colourIn){
+        var swapColour={red:"team1",blue:"team2",green:"team3",black:"dead",
+                        yellow:"hitExp",white:"behind"};
+        return params.colours[swapColour[colourIn]];};
+
     c2e.addContext(temp,"id",[matchid]);
     c2e.addContext(temp,"uid",[uid]);
     c2e.addContext(temp,"pos",[pos.x,pos.y]);
     c2e.addContext(temp,"draw",["cicle","black",5]);
-    c2e.addContext(temp,"colour",[colour]);
+    c2e.addContext(temp,"colour",[findColour(colour)]);
     c2e.addContext(temp,"bullet",[team,range,pos]);
     c2e.addContext(temp,"damage",[1]);
     // need to make collider triggers
@@ -140,10 +148,18 @@ function createBullet(uid,pos,velocity,range,team,colour,matchid){
 
 function createExplosion(pos,rate,initialRadius,finalRadius,team){
     var temp = c2e.addEnt();
+    // Hack has to be called in an env with params.colours defined!!
+    // This HAS to be done at this level since different envs will have
+    // different colour names
+    var findColour = function(colourIn){
+        var swapColour={red:"team1",blue:"team2",green:"team3",black:"dead",
+                        yellow:"hitExp",white:"behind"};
+        return params.colours[swapColour[colourIn]];};
+
     c2e.addContext(temp,"pos",[pos.x,pos.y]);
     c2e.addContext(temp,"draw",
                    ["cicle","black",initialRadius]);
-    c2e.addContext(temp,"colour",["yellow"]);
+    c2e.addContext(temp,"colour",[findColour("yellow")]);
     c2e.addContext(temp,"explosion",[team,finalRadius]);
     // need to make collider triggers
     // c2e.addContext(temp,"collider",[5,5,false,true,0,[]]);
@@ -371,15 +387,23 @@ function moveOthers(weight){
 
 function updatePlayerPos(pos,team,colour,alive,direction,matchid,id){
     var ops;
-    //console.log(colour);
+    // Hack, this HAS to be called from an environment with colours
+    // defined,
+    // in the future the first arg of all net call functions will be
+    // a params arg
+    var findColour = function(colourIn){
+        var swapColour={red:"team1",blue:"team2",green:"team3",black:"dead",
+                        yellow:"hitExp",white:"behind"};
+        return params.colours[swapColour[colourIn]];};
+    //console.log(colours);
     // can be updated with match id
     if(id[1]!=clientID[1]){
         if(Object.keys(otherPlayersLive).includes(matchid.toString())){
             updateOtherPlayerLive(otherPlayersLive[matchid],
-                                  pos,team,colour,alive,direction);
+                                  pos,team,findColour(colour),alive,direction);
         }
         else{
-            createOtherPlayerLive(pos,team,colour,alive,direction,matchid,id);
+            createOtherPlayerLive(pos,team,findColour(colour),alive,direction,matchid,id);
         }}
 }
 
@@ -626,11 +650,11 @@ function createPlayerGrid(ctx,players,event,hEvent){
 function addDraw(id,shape,strokeColour,radius,colours){
     if(colours)
         c2e.addContext(id,"draw",
-                       [shape,strokeColour,radius,colours.r,olours.g,
-                        colours.b,colours.k,colours.w]);
+                       [shape,strokeColour,radius,colours.team1,colours.team2,
+                        colours.team3,colours.dead,colours.pointer,colours.hitExp,colours.accent,colours.behind]);
     else
         c2e.addContext(id,"draw",
                        [shape,strokeColour,radius,"red","green",
-                        "blue","black","white"]);
+                        "blue","black","yellow","yellow","yellow","white"]);
     return id;
 }
