@@ -233,7 +233,7 @@ function systemUpdateExplosion(ent,dt,entid){
 function systemDrawObj (ent,ctx,camera){
     var draw = ent["draw"];
     var pos = ent["pos"];
-    console.log(ent["colour"].colour)
+    //console.log(ent["colour"].colour)
     var fillColour = ent["colour"].colour; // by this point the colour should be right
     ctx.strokeStyle=draw.strokeColour;
     ctx.fillStyle=fillColour;
@@ -328,24 +328,25 @@ function systemDrawPlayer (ent,ctx,camera,posEnd){
 }
 
 var systemDrawButtonReqs = ["text","backgroundBox","boudningBox","pos","hovered"];
-function systemDrawButton(ent,ctx){
+function systemDrawButton(ent,ctx,colours){
+    var findColour = findColourGen(colours)
     if(!ent["hovered"].state){
-        ctx.fillStyle=ent["backgroundBox"].colour;
+        ctx.fillStyle=findColour(ent["backgroundBox"].colour);
         ctx.fillRect(ent["pos"].x-ent["boundingBox"].w/2,
                      ent["pos"].y-ent["boundingBox"].h/2,
                      ent["boundingBox"].w,ent["boundingBox"].h);
-        ctx.fillStyle = ent["text"].colour;
+        ctx.fillStyle = findColour(ent["text"].colour);
         ctx.font = ent["text"].font;
         ctx.textAlign ="center";
         ctx.textBaseline ="middle";
         ctx.fillText(ent["text"].text,ent["pos"].x,ent["pos"].y);
     }
     else{
-        ctx.fillStyle=ent["backgroundBox"].hColour;
+        ctx.fillStyle=findColour(ent["backgroundBox"].hColour);
         ctx.fillRect(ent["pos"].x-ent["boundingBox"].w/2,
                      ent["pos"].y-ent["boundingBox"].h/2,
                      ent["boundingBox"].w,ent["boundingBox"].h);
-        ctx.strokeStyle=ent["backgroundBox"].hStroke;
+        ctx.strokeStyle=findColour(ent["backgroundBox"].hStroke);
         ctx.lineWidth=ent["backgroundBox"].hLineWidth;
         ctx.strokeRect(ent["pos"].x-ent["boundingBox"].w/2,
                        ent["pos"].y-ent["boundingBox"].h/2,

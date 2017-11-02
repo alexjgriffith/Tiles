@@ -97,7 +97,7 @@ var otherPlayers=[];
 /* start fixing here */
 function definePlayer(Player,colours){
     playerId = c2e.addEnt();
-    console.log(Player)
+    //console.log(Player)
     c2e.addContext(playerId,"pos",[Player.pos.x,Player.pos.y]);
     //c2e.addContext(playerId,"draw",["circle","black",25]);
     addDraw(playerId,"circle","black",25,colours)
@@ -439,10 +439,10 @@ function updateButtons(mpos,click,args){
     }
 }
 
-function drawButtons(contexts){
+function drawButtons(contexts,colours){
     var buttons = c2e.alle("hovered");
     for(i in buttons){
-        c2e.applySystem("drawButton",[buttons[i]],[contexts]);
+        c2e.applySystem("drawButton",[buttons[i]],[contexts,colours]);
     }
 }
 

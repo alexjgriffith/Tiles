@@ -3,7 +3,7 @@ function initLoading(ctx,params){
     var date = new Date;
     ctx.canvas.style.cursor="none"
     if(params==null || params == undefined )
-        console.log("Error: Params Not Initializes")
+        console.log("Error: Params Not Initialized")
     menu={
         type:"loading",
         terminate:false,
@@ -22,19 +22,17 @@ function evalLoading(menu,inputs,ctx,dt){
 }
 
 function drawLoading(menu,ctx){
-    ctx.fillStyle="red";
+    var findColour = findColourGen(menu.params.colours)
+    ctx.fillStyle=findColour("red");
     ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);
-    ctx.fillStyle="green";
+    ctx.fillStyle=findColour("green");
     ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height/8);
     ctx.fillRect(0,ctx.canvas.height*7/8,ctx.canvas.width,ctx.canvas.height/8);
     // Title
-    ctx.fillStyle="black";
+    ctx.fillStyle=findColour("black");
     ctx.font = "60px Impact";
     ctx.textBaseline ="middle";
     ctx.textAlign ="center";
     ctx.fillText("Loading ...",ctx.canvas.width/2,ctx.canvas.height*0.5);
-
-    ctx.font = "30px Impact";
-    ctx.fillText("ALPHA V0.1.0",ctx.canvas.width-100,ctx.canvas.height*15/16);
-
+    drawAlphaLogo(ctx,findColour);
 }

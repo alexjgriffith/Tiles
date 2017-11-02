@@ -67,7 +67,7 @@ function OptionsMenu (ces){
     }
 
     function clear(){
-        console.log("clearing options menu")
+        // console.log("clearing options menu")
         var ents = ces.alle("optionsMenu");
         for(i in ents){
             ces.removeEnt(ents[i]);
@@ -97,7 +97,6 @@ function OptionsMenu (ces){
         addButton("Network",pass1,notImplementedHover);
         addButton("Button4",pass1,notImplementedHover);
         confirmButtons();
-        console.log("in init")
         state = {terminate:false,
                  type:"optionsMenu",
                  params:params,
@@ -122,25 +121,28 @@ function OptionsMenu (ces){
     }
 
     function draw(state,ctx){
-        ctx.fillStyle="red";
+        var findColour = findColourGen(state.params.colours)
+        ctx.fillStyle=findColour("red");
         ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);
-        ctx.fillStyle="green";
+        ctx.fillStyle=findColour("green");
         ctx.fillRect(0,ctx.canvas.height*7/8,
                  ctx.canvas.width,ctx.canvas.height*1/8);
         // Header
-        ctx.fillStyle="black";
+        ctx.fillStyle=findColour("black");
         ctx.font = "60px Impact";
         ctx.textBaseline ="middle";
         ctx.textAlign ="center";
         ctx.fillText("Options",ctx.canvas.width/2,ctx.canvas.height*0.1);
 
+        // Footer
+        ctx.fillStyle=findColour("black");
         ctx.font = "30px Impact";
+        ctx.textAlign ="center";
         ctx.fillText(state.note,ctx.canvas.width/2,ctx.canvas.height*15/16);
 
-        ctx.font = "30px Impact";
-        ctx.fillText("ALPHA V0.1.0",ctx.canvas.width-100,ctx.canvas.height*15/16);
 
-        drawButtons(ctx);
+        drawAlphaLogo(ctx,findColour);
+        drawButtons(ctx,menu.params.colours);
     }
 
     return init;

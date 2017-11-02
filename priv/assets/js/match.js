@@ -174,6 +174,7 @@ function draw(game, ctx){
     var ymax = Math.floor(game.dim.y / ts.y);
     var tx = Math.floor(game.camera.x / ts.x);
     var ty = Math.floor(game.camera.y / ts.y);
+    var findColour = findColourGen(game.params.colours)
     //ctx.clearRect(0,0,600,400);
     ctx.drawImage(game.grid,game.camera.x,game.camera.y,game.dim.x,game.dim.y,0,0,game.dim.x,game.dim.y);
     edraw(ctx,game.camera)
@@ -196,11 +197,11 @@ function draw(game, ctx){
     }
     if(game.playerAlive==false){
         ctx.canvas.style.cursor="crosshair"
-        ctx.fillStyle="red";
+        ctx.fillStyle=findColour("red");
         ctx.fillRect(200,0,ctx.canvas.width-400,ctx.canvas.height);
         //ctx.fillRect(80,0,ctx.canvas.width-160,ctx.canvas.height);
         // Title
-        ctx.fillStyle="black";
+        ctx.fillStyle=findColour("black");
         ctx.font = "40px Impact";
         ctx.textBaseline ="middle";
         ctx.textAlign ="center";
@@ -208,17 +209,14 @@ function draw(game, ctx){
         ctx.font = "35px Impact";
         ctx.fillText("Colours of Destiny",ctx.canvas.width/2,ctx.canvas.height*0.2);
         // Title
-        ctx.fillStyle="black";
+        ctx.fillStyle=findColour("black");
         ctx.font = "60px Impact";
         ctx.textBaseline ="middle";
         ctx.textAlign ="center";
         ctx.fillText("Ship Down",ctx.canvas.width/2,ctx.canvas.height*0.5);
-        drawButtons(ctx);
+        drawButtons(ctx,game.params.colours);
     }
-    ctx.fillStyle="black";
-    ctx.font = "30px Impact";
-    ctx.fillText("ALPHA V0.1.0",ctx.canvas.width-100,ctx.canvas.height*15/16);
-
+    drawAlphaLogo(ctx,findColour);
 }
 
 

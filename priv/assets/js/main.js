@@ -46,6 +46,7 @@ function checkForEvents(game){
 }
 
 
+// For the most part these can be shared in a new gen object
 function escapeCallback(nextState){
     return function(){
         events.push(function(game ){
@@ -54,7 +55,23 @@ function escapeCallback(nextState){
             return game})}
 }
 
-// This can be shared in a global
+function findColourGen(colours){
+    return function(colourIn){
+        var swapColour={red:"team1",blue:"team2",green:"team3",black:"dead",
+                        yellow:"hitExp",white:"behind"};
+        return colours[swapColour[colourIn]];
+    }
+};
+
+function drawAlphaLogo(ctx,findColour){
+    ctx.fillStyle=findColour("black");
+    ctx.textBaseline ="middle";
+    ctx.textAlign ="center";
+    ctx.font = "30px Impact";
+    ctx.fillText("ALPHA V0.1.0",ctx.canvas.width-100,ctx.canvas.height*15/16);
+}
+
+
 var notImplementedHover = function(){
     events.push(function(game){game.note="Not Implemented"; return game;});
 }

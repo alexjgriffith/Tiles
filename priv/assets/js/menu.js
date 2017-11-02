@@ -13,7 +13,6 @@
 //
 
 function matches(body){
-    console.log(body);
     events.push(function(game){
         if(game.type=="menu" || game.type=="matchlist"){
             if(body==null){
@@ -37,7 +36,6 @@ function matches(body){
 function loadMenu (ctx,params){
     var manu;
     var date = new Date;
-    console.log("init load menu")
     if(params==null || params == undefined )
         console.log("Error: Params Not Initializes")
 
@@ -106,13 +104,14 @@ function meval(menu,inputs,ctx,dt){
 
 function mdraw(menu,ctx){
     // Background
-    ctx.fillStyle="red";
+    var findColour = findColourGen(menu.params.colours)
+    ctx.fillStyle=findColour("red");
     ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);
-    ctx.fillStyle="green";
+    ctx.fillStyle=findColour("green");
     ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height/8);
     ctx.fillRect(0,ctx.canvas.height*7/8,ctx.canvas.width,ctx.canvas.height/8);
     // Title
-    ctx.fillStyle="black";
+    ctx.fillStyle=findColour("black");
     ctx.font = "60px Impact";
     ctx.textBaseline ="middle";
     ctx.textAlign ="center";
@@ -120,11 +119,6 @@ function mdraw(menu,ctx){
     ctx.font = "50px Impact";
     ctx.fillText("Colours of Destiny",ctx.canvas.width/2,ctx.canvas.height*0.4);
 
-    ctx.font = "30px Impact";
-    ctx.fillText("ALPHA V0.1.0",ctx.canvas.width-100,ctx.canvas.height*15/16);
-
-    ctx.font = "30px Impact";
-    ctx.fillText(menu.note,ctx.canvas.width/2,ctx.canvas.height*15/16);
-
-    drawButtons(ctx);
+    drawAlphaLogo(ctx,findColour);
+    drawButtons(ctx,menu.params.colours);
 }

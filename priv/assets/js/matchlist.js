@@ -1,5 +1,4 @@
 function matchlistWrapper(matches){
-    console.log(matches);
     return function(ctx,params) {matchlist(ctx,params,matches)};
 }
 
@@ -95,17 +94,18 @@ function matchlisteval(game,inputs,ctx,dt){
 
 function matchlistdraw(game,ctx){
     // Background
-    ctx.fillStyle="red";
+    var findColour = findColourGen(game.params.colours)
+    ctx.fillStyle=findColour("red");
     ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);
-    ctx.fillStyle="green";
+    ctx.fillStyle=findColour("green");
     ctx.fillRect(ctx.canvas.width/2,ctx.canvas.height*2/8-25,
                  ctx.canvas.width*15/32,ctx.canvas.height*5/8);
 
-    ctx.fillStyle="green";
+    ctx.fillStyle=findColour("green");
     ctx.fillRect(0,ctx.canvas.height*7/8,
                  ctx.canvas.width,ctx.canvas.height*1/8);
     // Header
-    ctx.fillStyle="black";
+    ctx.fillStyle=findColour("black");
     ctx.font = "60px Impact";
     ctx.textBaseline ="middle";
     ctx.textAlign ="center";
@@ -114,9 +114,8 @@ function matchlistdraw(game,ctx){
     ctx.font = "30px Impact";
     ctx.fillText(game.note,ctx.canvas.width/2,ctx.canvas.height*15/16);
 
-    ctx.font = "30px Impact";
-    ctx.fillText("ALPHA V0.1.0",ctx.canvas.width-100,ctx.canvas.height*15/16);
+    drawAlphaLogo(ctx,findColour)
 
 
-    drawButtons(ctx);
+    drawButtons(ctx,game.params.colours);
 }
