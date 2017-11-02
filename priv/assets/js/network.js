@@ -98,7 +98,7 @@ xhttp.onreadystatechange = function() {
         // Typical action to be performed when the document is ready:
         var cases ={matches:matches};
         var received_msg = JSON.parse(xhttp.responseText);
-        //console.log(received_msg);
+        console.log(received_msg);
         if(cases[received_msg.type]){
              cases[received_msg.type](received_msg.body);
         }

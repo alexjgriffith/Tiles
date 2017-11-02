@@ -1,6 +1,9 @@
 // Impl
 var c2e = new CES;
 
+var optionsMenu = OptionsMenu(c2e);
+var coloursMenu = ColoursMenu(c2e);
+
 c2e.defcontext("pos",contextPos)
 c2e.defcontext("draw",contextDraw)
 c2e.defcontext("player",contextPlayer)
@@ -33,11 +36,13 @@ c2e.defcontext("power",contextPower)
 c2e.defcontext("damage",contextDamage)
 c2e.defcontext("powerBuildUp",contextPowerBuildUp)
 c2e.defcontext("moveKeys",contextMoveKeys)
+c2e.defcontext("colouredBackgroundBox",contextColouredBackgroundBox)
 
 c2e.defcontext("match",contextMatch)
 c2e.defcontext("loadMenu",contextLoadMenu)
 c2e.defcontext("loadingScreen",contextLoadingScreen)
 c2e.defcontext("matchlist",contextMatchlist)
+c2e.defcontext("optionsMenu",contextOptionsMenu);
 
 
 c2e.defsystem("receiveExit",systemReceiveExit,[])
@@ -58,6 +63,7 @@ c2e.defsystem("updatePlayer",systemUpdatePlayer);
 c2e.defsystem("playerCreateBullet",systemPlayerCreateBullet);
 c2e.defsystem("updateButton",systemUpdateButton,systemUpdateButtonReqs);
 c2e.defsystem("drawButton",systemDrawButton,systemDrawButtonReqs);
+c2e.defsystem("drawColouredButton",systemDrawColouredButton,[]);
 c2e.defsystem("sendPos",systemSendPos,[]);
 c2e.defsystem("sendAngle",systemSendAngle,[]);
 c2e.defsystem("updateBullet",systemUpdateBullet,[])
@@ -440,6 +446,13 @@ function drawButtons(contexts){
     }
 }
 
+function drawColouredButtons(contexts){
+    var buttons = c2e.alle("colouredBackgroundBox");
+    for(i in buttons){
+        c2e.applySystem("drawColouredButton",[buttons[i]],[contexts]);
+    }
+}
+
 function clearLoadMenu(){
     var buttons = c2e.alle("loadMenu");
     for(i in buttons){
@@ -645,7 +658,6 @@ function createPlayerGrid(ctx,players,event,hEvent){
         }
     }
 }
-
 
 function addDraw(id,shape,strokeColour,radius,colours){
     if(colours)

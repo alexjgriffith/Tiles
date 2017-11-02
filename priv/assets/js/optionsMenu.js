@@ -30,21 +30,118 @@ drawPlayer ~> drawCircle + drawCircle + drawTriangle + drawArch + drawArch + dra
 // slots available is broken
 */
 
-function initOptionMenu(ctx){
-    var game;
-    var time = (new Date).getTime();
+// This will be the pilot for the new view plugin format
+function OptionsMenu (ces){
+    var buttons =[];
+    var state = null;
 
-    // Initialize Elements in CES
-    optionButton=newOptionButton(ctx,300,50,10);
-    optionButton("Select Colours",colourEvent,colourHover);
+    function createButton(text,x,y,w,h,font,hFont,tColour,bgColour,event,hEvent){
+        var temp = ces.addEnt();
+        ces.addContext(temp,"text",[text,text,font,hFont,tColour,tColour]);
+        ces.addContext(temp,"backgroundBox",[bgColour,bgColour,null,"black",null,5]);
+        ces.addContext(temp,"boundingBox",[w,h]);
+        ces.addContext(temp,"event",[event]);
+        ces.addContext(temp,"hoverEvent",[hEvent]);
+        ces.addContext(temp,"hovered",[false]);
+        ces.addContext(temp,"pos",[x,y]);
+        ces.addContext(temp,"optionsMenu",[]);
+        return temp;
+    }
 
-    gameloop(game,evalOptoinMenu,drawOptionMenu,ctx,date.getTime(),frames);
-}
+    function quickButton(text,event,hEvent,index,total){
+        var font = "30px Impact";
+        var hFont = "40px Impact";
+        var y = 150+index*60;
+        createButton(text,400,y,300,50,font,hFont,"white","blue",event,hEvent)
+    }
 
-function evalOptionMenu(game,inputs,ctx,dt){
+    function confirmButtons(){
+        buttons.map(function(x){
+            x.push(buttons.length);
+            quickButton.apply(undefined,x);
+        });
+    }
 
-}
+    function addButton(text,event,hevent){
+        buttons.push([text,event,hevent,buttons.length])
+    }
 
-function drawOptionMenu(game,ctx){
+    function clear(){
+        console.log("clearing options menu")
+        var ents = ces.alle("optionsMenu");
+        for(i in ents){
+            ces.removeEnt(ents[i]);
+        }
+        buttons=[]
+    }
 
-}
+    function selectColoursHover (){
+        events.push(function(game){
+            game.note="Change Colour Scheme";
+            return game;});
+    }
+
+    function selectColourEvent(params){
+        events.push(function(game){
+            game.nextState=coloursMenu;
+            game.terminate=true;
+            return game;})
+    }
+    // required
+    function init (ctx,params){
+        var state;
+        var time = (new Date).getTime();
+
+        addButton("Colours",selectColourEvent,selectColoursHover);
+        addButton("Controls",pass1,notImplementedHover);
+        addButton("Network",pass1,notImplementedHover);
+        addButton("Button4",pass1,notImplementedHover);
+        confirmButtons();
+        console.log("in init")
+        state = {terminate:false,
+                 type:"optionsMenu",
+                 params:params,
+                 nextState:loadMenu,
+                 cleanup:clear,
+                 matches:{number:0,
+                          list:{}},
+                 note:""}
+        gameloop(state,eval,draw,ctx,time,frames);
+    }
+
+    function eval(state,inputs,ctx,dt){
+        var click =inputs.click;
+        var mouse =inputs.pos;
+        // add matchlistEscapeFunction to the global engine
+        inputs=escape(inputs,escapeCallback(loadMenu));
+        updateButtons(mouse,click,[null]);
+        if(events.length==0)
+            state.note="";
+        state = checkForEvents(state);
+        return state;
+    }
+
+    function draw(state,ctx){
+        ctx.fillStyle="red";
+        ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);
+        ctx.fillStyle="green";
+        ctx.fillRect(0,ctx.canvas.height*7/8,
+                 ctx.canvas.width,ctx.canvas.height*1/8);
+        // Header
+        ctx.fillStyle="black";
+        ctx.font = "60px Impact";
+        ctx.textBaseline ="middle";
+        ctx.textAlign ="center";
+        ctx.fillText("Options",ctx.canvas.width/2,ctx.canvas.height*0.1);
+
+        ctx.font = "30px Impact";
+        ctx.fillText(state.note,ctx.canvas.width/2,ctx.canvas.height*15/16);
+
+        ctx.font = "30px Impact";
+        ctx.fillText("ALPHA V0.1.0",ctx.canvas.width-100,ctx.canvas.height*15/16);
+
+        drawButtons(ctx);
+    }
+
+    return init;
+};

@@ -13,6 +13,7 @@
 //
 
 function matches(body){
+    console.log(body);
     events.push(function(game){
         if(game.type=="menu" || game.type=="matchlist"){
             if(body==null){
@@ -36,16 +37,24 @@ function matches(body){
 function loadMenu (ctx,params){
     var manu;
     var date = new Date;
+    console.log("init load menu")
     if(params==null || params == undefined )
         console.log("Error: Params Not Initializes")
 
     var match = function(params){
         //console.log("new match")
         //websocketOpen(matchFunction(ctx),params)
-        events.push(function(game){game.terminate=true; return game;});
+        events.push(function(game){
+            //game.nextState=matchlistWrapper({number:0,list:{}});
+            game.terminate=true; return game;});
     };
     var signin = function(Param){};
-    var about = function(Param){};
+    var about = function(params) {
+        events.push(function(game){
+            game.nextState=optionsMenu;
+            game.terminate=true;
+            return game;})};
+
     var signinHover = function(){
         events.push(function(game){game.note="Not Implemented"; return game;});
     }
@@ -64,9 +73,9 @@ function loadMenu (ctx,params){
     ctx.canvas.style.cursor="crosshair"
     createQuickButton("Join as Guest",match,matchHover,ctx.canvas.width/2,
                       ctx.canvas.height/2+35);
-    createQuickButton("Sign In",signin,signinHover,ctx.canvas.width/2,
+    createQuickButton("Sign In",signin,notImplementedHover,ctx.canvas.width/2,
                       ctx.canvas.height/2+95);
-    createQuickButton("Options",about,signinHover,ctx.canvas.width/2,
+    createQuickButton("Options",about,notImplementedHover,ctx.canvas.width/2,
                       ctx.canvas.height/2+155);
     menu={terminate:false,
           type:"menu",

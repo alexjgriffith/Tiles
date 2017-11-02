@@ -358,6 +358,7 @@ function systemDrawButton(ent,ctx){
     }
     return ent;
 }
+
 var systemUpdateButtonReqs = ["clickable","hovered","boundingBox","pos","event","hoverEvent"];
 function systemUpdateButton(ent,mpos,click,args){
     var buttonRange = {xmin:ent["pos"].x-ent["boundingBox"].w/2,
@@ -385,5 +386,31 @@ function systemUpdateButton(ent,mpos,click,args){
             ent.event.fun.apply(undefined,args)
             //console.log("returned from event");
         }
+    return ent;
+}
+function systemDrawColouredButton(ent,ctx){
+    var x = ent["pos"].x-ent["boundingBox"].w/2;
+    var y = ent["pos"].y-ent["boundingBox"].h/2;
+    var length,colours;
+    if(!ent["hovered"].state){
+        colours=ent["colouredBackgroundBox"].colours
+    }
+    else{
+        colours=ent["colouredBackgroundBox"].hColours
+    }
+    length=colours.length
+    for(var i in colours){
+        ctx.fillStyle=colours[i];
+        ctx.fillRect(x+ent["boundingBox"].w/length*i,
+                     y,
+                     ent["boundingBox"].w/length,ent["boundingBox"].h);
+    }
+
+    if(ent["hovered"].state){
+        ctx.lineWidth=ent["colouredBackgroundBox"].hWidth;
+        ctx.strokeRect(ent["pos"].x-ent["boundingBox"].w/2,
+                       ent["pos"].y-ent["boundingBox"].h/2,
+                       ent["boundingBox"].w,ent["boundingBox"].h);
+    }
     return ent;
 }

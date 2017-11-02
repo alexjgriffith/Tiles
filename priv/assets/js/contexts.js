@@ -106,6 +106,16 @@ function contextBackgroundBox (colour,hColour,stroke,hStroke,
             hLineWidth:hLineWidth};
 }
 
+function contextColouredBackgroundBox(colours,hColours,line,hLine,width,hWidth){
+    return {colours:colours,
+            hColours:hColours,
+            line:line,
+            hLine:hLine,
+            width:width,
+            hWidth:hWidth
+           };
+}
+
 function contextBoundingBox(w,h){
     return {w:w,h:h};
 }
@@ -166,5 +176,9 @@ function contextDamage(damage){
 }
 
 function contextMatchlist(){
+    return {};
+}
+
+function contextOptionsMenu(){
     return {};
 }

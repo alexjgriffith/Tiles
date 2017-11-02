@@ -27,13 +27,15 @@ function main(){
     var colours={team1:"red",team2:"blue",team3:"green",
              dead:"black",pointer:"black",hitExp:"yellow",
              accent:"yellow",behind:"white"}
-    colours.team1="#375e97";
-    colours.team2="#fb6542";
-    colours.team3="#3f681c";
-    colours.hitExp="#ffbb00";
-    colours.accent="#ffbb00";
+    // colours.team1="#375e97";
+    // colours.team2="#fb6542";
+    // colours.team3="#3f681c";
+    // colours.hitExp="#ffbb00";
+    // colours.accent="#ffbb00";
     params={_atest:"",colours:colours};
-    loadMenu(ctx,params);
+    //loadMenu(ctx,params);
+    //optionsMenu(ctx,params);
+    coloursMenu(ctx,params);
 }
 
 function checkForEvents(game){
@@ -41,6 +43,20 @@ function checkForEvents(game){
         game=events[i](game);
     events=[];
     return game;
+}
+
+
+function escapeCallback(nextState){
+    return function(){
+        events.push(function(game ){
+            game.nextState=nextState;
+            game.terminate=true;
+            return game})}
+}
+
+// This can be shared in a global
+var notImplementedHover = function(){
+    events.push(function(game){game.note="Not Implemented"; return game;});
 }
 
 // function matchFunction(ctx){

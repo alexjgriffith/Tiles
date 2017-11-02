@@ -1,5 +1,5 @@
 function matchlistWrapper(matches){
-    //console.log(matches);
+    console.log(matches);
     return function(ctx,params) {matchlist(ctx,params,matches)};
 }
 
@@ -116,6 +116,7 @@ function matchlistdraw(game,ctx){
 
     ctx.font = "30px Impact";
     ctx.fillText("ALPHA V0.1.0",ctx.canvas.width-100,ctx.canvas.height*15/16);
+
 
     drawButtons(ctx);
 }
