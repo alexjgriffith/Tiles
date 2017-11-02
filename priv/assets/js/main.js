@@ -23,9 +23,19 @@ function main(){
                                 false);
     document.addEventListener("keyup",
                                 function(e){keyboard(e,"up")},
-                                false);
-
-    loadMenu(ctx);
+                              false);
+    var colours={team1:"red",team2:"blue",team3:"green",
+             dead:"black",pointer:"black",hitExp:"yellow",
+             accent:"yellow",behind:"white"}
+    // colours.team1="#375e97";
+    // colours.team2="#fb6542";
+    // colours.team3="#3f681c";
+    // colours.hitExp="#ffbb00";
+    // colours.accent="#ffbb00";
+    params={_atest:"",colours:colours};
+    //loadMenu(ctx,params);
+    //optionsMenu(ctx,params);
+    coloursMenu(ctx,params);
 }
 
 function checkForEvents(game){
@@ -35,19 +45,50 @@ function checkForEvents(game){
     return game;
 }
 
+
+// For the most part these can be shared in a new gen object
+function escapeCallback(nextState){
+    return function(){
+        events.push(function(game ){
+            game.nextState=nextState;
+            game.terminate=true;
+            return game})}
+}
+
+function findColourGen(colours){
+    return function(colourIn){
+        var swapColour={red:"team1",blue:"team2",green:"team3",black:"dead",
+                        yellow:"hitExp",white:"behind"};
+        return colours[swapColour[colourIn]];
+    }
+};
+
+function drawAlphaLogo(ctx,findColour){
+    ctx.fillStyle=findColour("black");
+    ctx.textBaseline ="middle";
+    ctx.textAlign ="center";
+    ctx.font = "30px Impact";
+    ctx.fillText("ALPHA V0.1.0",ctx.canvas.width-100,ctx.canvas.height*15/16);
+}
+
+
+var notImplementedHover = function(){
+    events.push(function(game){game.note="Not Implemented"; return game;});
+}
+
 // function matchFunction(ctx){
 //     return function(tiles,player){
 //         initMatch(ctx,tiles,player)
 //     };
 // };
 
-function matchFunction(ctx){
-    return function(tiles,player){
+function matchFunction(ctx,params){
+    return function(player,tiles){
         events.push(function(game){
             game.terminate=true;
-            game.nextState=function(ctx){
+            game.nextState=function(ctx,params){
                 //console.log("call match");
-                initMatch(ctx,tiles,player)
+                initMatch(ctx,params,tiles,player);
             };
             return game;
         });};}
@@ -58,7 +99,7 @@ function gameloop (game,eval,draw,ctx,time,dt){
     game = eval(game,inputs,ctx,dt);
     if(game.terminate){
         game.cleanup();
-        game.nextState(ctx);
+        game.nextState(ctx,game.params);
         return -1;
     }
     draw(game,ctx);

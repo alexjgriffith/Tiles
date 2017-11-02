@@ -18,7 +18,7 @@ function contextBullet(team,range,start){
     return {team:team,range:range,start:start};
 }
 
-function contextDraw (shape,strokeColour, radius){
+function contextDraw (shape,strokeColour,radius,team1,team2,team3,dead,pointer,hitExp,accent,behind){
     return {shape:shape,
             damageDt:200,
             timeDamage:0,
@@ -26,7 +26,15 @@ function contextDraw (shape,strokeColour, radius){
             damage:"yellow",
             strokeColour:strokeColour,
             radius:radius,
-            colour:"black"};
+            colour:"black",
+            team1:team1,
+            team2:team2,
+            team3:team3,
+            dead:dead,
+            pointer:pointer,
+            hitExp:hitExp,
+            accent:accent,
+            behind:behind};
 }
 
 function contextDirection(x,y){
@@ -98,6 +106,16 @@ function contextBackgroundBox (colour,hColour,stroke,hStroke,
             hLineWidth:hLineWidth};
 }
 
+function contextColouredBackgroundBox(colours,hColours,line,hLine,width,hWidth){
+    return {colours:colours,
+            hColours:hColours,
+            line:line,
+            hLine:hLine,
+            width:width,
+            hWidth:hWidth
+           };
+}
+
 function contextBoundingBox(w,h){
     return {w:w,h:h};
 }
@@ -130,6 +148,12 @@ function contextColour(colour){
     return{colour:colour};
 }
 
+function colourOptions(opt1,opt2,opt3,opt4,opt5){
+    // opt
+    return{red:opt1,blue2:opt2,green:opt3,
+           yellow:opt4,black:opt5}
+}
+
 function contextHealth(health){
     return{health:health,max:health};
 }
@@ -152,5 +176,9 @@ function contextDamage(damage){
 }
 
 function contextMatchlist(){
+    return {};
+}
+
+function contextOptionsMenu(){
     return {};
 }

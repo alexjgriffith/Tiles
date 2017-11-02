@@ -1,14 +1,28 @@
-function initMatch(ctx,player,tiles){
+/*
+switch all views to require params
+*/
+
+function initMatch(ctx,params,tiles,player){
     var game;
     var date;
     var x=ctx.canvas.width,y=ctx.canvas.height;
+    //console.log(params);
+    if(params==null || params == undefined )
+        console.log("Error: Params Not Initializes")
+
     ctx.canvas.style.cursor="none"
     //console.log(player);
-    definePlayer(player);
+    definePlayer(player,params.colours);
+    var findColour = function(colourIn){ // hack
+        var swapColour={red:"team1",blue:"team2",green:"team3",black:"dead",
+                        yellow:"hitExp",white:"behind"};
+
+        return params.colours[swapColour[colourIn]];};
     game = {
         type:"match",
         terminate:false,
-        nextState:function(ctx){loadMenu(ctx)},
+        nextState:loadMenu,
+        params:params,
         cleanup:clearMatch,
         version:"0.1",
         fps:[30,30,30,30,30,30,30,30,30,30,
@@ -24,9 +38,9 @@ function initMatch(ctx,player,tiles){
         playerAlive:true,
         tileSize:{x:75,y:75},
         camera:{x:0,y:0},
-        types:{grass:{colour:"green"},
-               earth:{colour:"red"},
-               water:{colour:"blue"}},
+        types:{grass:{colour:findColour("green")},
+               earth:{colour:findColour("red")},
+               water:{colour:findColour("blue")}},
         dim:{x:x,y:y},
         ces:c2e // this is how it should be done for the api
     }
@@ -147,6 +161,7 @@ function eval(game,inputs,ctx, dt){
     }
 
     game = checkForEvents(game);
+    websocketPing();
     return game;
 }
 
@@ -159,6 +174,7 @@ function draw(game, ctx){
     var ymax = Math.floor(game.dim.y / ts.y);
     var tx = Math.floor(game.camera.x / ts.x);
     var ty = Math.floor(game.camera.y / ts.y);
+    var findColour = findColourGen(game.params.colours)
     //ctx.clearRect(0,0,600,400);
     ctx.drawImage(game.grid,game.camera.x,game.camera.y,game.dim.x,game.dim.y,0,0,game.dim.x,game.dim.y);
     edraw(ctx,game.camera)
@@ -181,11 +197,11 @@ function draw(game, ctx){
     }
     if(game.playerAlive==false){
         ctx.canvas.style.cursor="crosshair"
-        ctx.fillStyle="red";
+        ctx.fillStyle=findColour("red");
         ctx.fillRect(200,0,ctx.canvas.width-400,ctx.canvas.height);
         //ctx.fillRect(80,0,ctx.canvas.width-160,ctx.canvas.height);
         // Title
-        ctx.fillStyle="black";
+        ctx.fillStyle=findColour("black");
         ctx.font = "40px Impact";
         ctx.textBaseline ="middle";
         ctx.textAlign ="center";
@@ -193,17 +209,14 @@ function draw(game, ctx){
         ctx.font = "35px Impact";
         ctx.fillText("Colours of Destiny",ctx.canvas.width/2,ctx.canvas.height*0.2);
         // Title
-        ctx.fillStyle="black";
+        ctx.fillStyle=findColour("black");
         ctx.font = "60px Impact";
         ctx.textBaseline ="middle";
         ctx.textAlign ="center";
         ctx.fillText("Ship Down",ctx.canvas.width/2,ctx.canvas.height*0.5);
-        drawButtons(ctx);
+        drawButtons(ctx,game.params.colours);
     }
-    ctx.fillStyle="black";
-    ctx.font = "30px Impact";
-    ctx.fillText("ALPHA V0.1.0",ctx.canvas.width-100,ctx.canvas.height*15/16);
-
+    drawAlphaLogo(ctx,findColour);
 }
 
 

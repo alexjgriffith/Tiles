@@ -1,9 +1,8 @@
 function matchlistWrapper(matches){
-    //console.log(matches);
-    return function(ctx) {matchlist(ctx,matches)};
+    return function(ctx,params) {matchlist(ctx,params,matches)};
 }
 
-function matchlist(ctx,matches){
+function matchlist(ctx,params,matches){
     var game;
     var time = (new Date).getTime();
     var matchHover =
@@ -40,7 +39,7 @@ function matchlist(ctx,matches){
                 game.nextState=initLoading;
                 game.terminate=true;
                 //console.log("new match")
-                websocketOpen(matchFunction(ctx),params)
+                websocketOpen(matchFunction(ctx,game.params),params)
                 return game;});
         };}
     var newMatch = function(params){
@@ -52,6 +51,7 @@ function matchlist(ctx,matches){
     game={type:"matchlist",
           terminate:false,
           nextState:initLoading,
+          params:params,
           cleanup:clearMatchlist,
           matches:matches,
           requestFrequency:5000,
@@ -94,17 +94,18 @@ function matchlisteval(game,inputs,ctx,dt){
 
 function matchlistdraw(game,ctx){
     // Background
-    ctx.fillStyle="red";
+    var findColour = findColourGen(game.params.colours)
+    ctx.fillStyle=findColour("red");
     ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);
-    ctx.fillStyle="green";
+    ctx.fillStyle=findColour("green");
     ctx.fillRect(ctx.canvas.width/2,ctx.canvas.height*2/8-25,
                  ctx.canvas.width*15/32,ctx.canvas.height*5/8);
 
-    ctx.fillStyle="green";
+    ctx.fillStyle=findColour("green");
     ctx.fillRect(0,ctx.canvas.height*7/8,
                  ctx.canvas.width,ctx.canvas.height*1/8);
     // Header
-    ctx.fillStyle="black";
+    ctx.fillStyle=findColour("black");
     ctx.font = "60px Impact";
     ctx.textBaseline ="middle";
     ctx.textAlign ="center";
@@ -113,8 +114,8 @@ function matchlistdraw(game,ctx){
     ctx.font = "30px Impact";
     ctx.fillText(game.note,ctx.canvas.width/2,ctx.canvas.height*15/16);
 
-    ctx.font = "30px Impact";
-    ctx.fillText("ALPHA V0.1.0",ctx.canvas.width-100,ctx.canvas.height*15/16);
+    drawAlphaLogo(ctx,findColour)
 
-    drawButtons(ctx);
+
+    drawButtons(ctx,game.params.colours);
 }

@@ -60,7 +60,7 @@ function comparePoints(xmin,xmax,ymin,ymax,tiles,px,py,weight){
     var m3 = comparePointC(A1,xmin,ymax,tileC.pos.x,tileC.pos.y,px,py,dim)*weight;
     var m4 = comparePointD(A1,xmin,ymin,tileD.pos.x,tileD.pos.y,px,py,dim)*weight;
     var retSum={red:0,blue:0,green:0};
-    var tform={earth:"red",water:"blue",grass:"green"};
+    var tform={earth:"red",grass:"green",water:"blue"};
     retSum[tform[tileA.type]]+=m1
     retSum[tform[tileB.type]]+=m2
     retSum[tform[tileC.type]]+=m3

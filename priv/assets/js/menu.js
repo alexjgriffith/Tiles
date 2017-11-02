@@ -33,16 +33,26 @@ function matches(body){
         return game;});
 }
 
-function loadMenu (ctx){
+function loadMenu (ctx,params){
     var manu;
     var date = new Date;
+    if(params==null || params == undefined )
+        console.log("Error: Params Not Initializes")
+
     var match = function(params){
         //console.log("new match")
         //websocketOpen(matchFunction(ctx),params)
-        events.push(function(game){game.terminate=true; return game;});
+        events.push(function(game){
+            //game.nextState=matchlistWrapper({number:0,list:{}});
+            game.terminate=true; return game;});
     };
     var signin = function(Param){};
-    var about = function(Param){};
+    var about = function(params) {
+        events.push(function(game){
+            game.nextState=optionsMenu;
+            game.terminate=true;
+            return game;})};
+
     var signinHover = function(){
         events.push(function(game){game.note="Not Implemented"; return game;});
     }
@@ -61,12 +71,13 @@ function loadMenu (ctx){
     ctx.canvas.style.cursor="crosshair"
     createQuickButton("Join as Guest",match,matchHover,ctx.canvas.width/2,
                       ctx.canvas.height/2+35);
-    createQuickButton("Sign In",signin,signinHover,ctx.canvas.width/2,
+    createQuickButton("Sign In",signin,notImplementedHover,ctx.canvas.width/2,
                       ctx.canvas.height/2+95);
-    createQuickButton("About",about,signinHover,ctx.canvas.width/2,
+    createQuickButton("Options",about,notImplementedHover,ctx.canvas.width/2,
                       ctx.canvas.height/2+155);
     menu={terminate:false,
           type:"menu",
+          params:params,
           //nextState:initLoading,
           nextState:matchlistWrapper({number:0,list:{}}),
           cleanup:clearLoadMenu,
@@ -93,13 +104,14 @@ function meval(menu,inputs,ctx,dt){
 
 function mdraw(menu,ctx){
     // Background
-    ctx.fillStyle="red";
+    var findColour = findColourGen(menu.params.colours)
+    ctx.fillStyle=findColour("red");
     ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);
-    ctx.fillStyle="green";
+    ctx.fillStyle=findColour("green");
     ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height/8);
     ctx.fillRect(0,ctx.canvas.height*7/8,ctx.canvas.width,ctx.canvas.height/8);
     // Title
-    ctx.fillStyle="black";
+    ctx.fillStyle=findColour("black");
     ctx.font = "60px Impact";
     ctx.textBaseline ="middle";
     ctx.textAlign ="center";
@@ -107,11 +119,6 @@ function mdraw(menu,ctx){
     ctx.font = "50px Impact";
     ctx.fillText("Colours of Destiny",ctx.canvas.width/2,ctx.canvas.height*0.4);
 
-    ctx.font = "30px Impact";
-    ctx.fillText("ALPHA V0.1.0",ctx.canvas.width-100,ctx.canvas.height*15/16);
-
-    ctx.font = "30px Impact";
-    ctx.fillText(menu.note,ctx.canvas.width/2,ctx.canvas.height*15/16);
-
-    drawButtons(ctx);
+    drawAlphaLogo(ctx,findColour);
+    drawButtons(ctx,menu.params.colours);
 }
