@@ -142,7 +142,7 @@ function OptionsMenu (ces){
 
 
         drawAlphaLogo(ctx,findColour);
-        drawButtons(ctx,menu.params.colours);
+        drawButtons(ctx,state.params.colours);
     }
 
     return init;

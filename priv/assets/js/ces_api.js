@@ -2,7 +2,7 @@
 var c2e = new CES;
 
 var optionsMenu = OptionsMenu(c2e);
-var coloursMenu = ColoursMenu(c2e);
+var coloursMenu;
 
 c2e.defcontext("pos",contextPos)
 c2e.defcontext("draw",contextDraw)
@@ -440,7 +440,7 @@ function updateButtons(mpos,click,args){
 }
 
 function drawButtons(contexts,colours){
-    var buttons = c2e.alle("hovered");
+    var buttons = c2e.alle("backgroundBox");
     for(i in buttons){
         c2e.applySystem("drawButton",[buttons[i]],[contexts,colours]);
     }

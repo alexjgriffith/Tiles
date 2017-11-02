@@ -240,7 +240,8 @@ function systemDrawObj (ent,ctx,camera){
     ctx.beginPath();
     ctx.arc(pos.x-camera.x+draw.radius,pos.y-camera.y+draw.radius,
             draw.radius,0,2*Math.PI)
-    ctx.stroke();
+    // decide if you want strokes for bullets!
+    //ctx.stroke();
     ctx.fill()
     return ent;
 }

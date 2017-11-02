@@ -7,7 +7,7 @@ var events=[];
 
 function main(){
     var x=800,y=600;
-    var ctx;
+    var ctx,colours,findColour;
     //document.getElementById("mainGame").innerHTML="<canvas id='gameCanvas' width='"+x+"' height='"+y+"' tabindex='1'></canvas>";
     document.getElementById("mainGame").innerHTML="<canvas id='gameCanvas' width='"+x+"' height='"+y+"'></canvas>";
 
@@ -24,18 +24,54 @@ function main(){
     document.addEventListener("keyup",
                                 function(e){keyboard(e,"up")},
                               false);
-    var colours={team1:"red",team2:"blue",team3:"green",
-             dead:"black",pointer:"black",hitExp:"yellow",
-             accent:"yellow",behind:"white"}
-    // colours.team1="#375e97";
-    // colours.team2="#fb6542";
-    // colours.team3="#3f681c";
-    // colours.hitExp="#ffbb00";
-    // colours.accent="#ffbb00";
-    params={_atest:"",colours:colours};
+
+    var colSets =[[["red","green","blue","yellow","black","white"],
+                   "\"Default\""],
+                  [["#fb6542","#3f681c","#375e97","#ffbb00",
+                    "black","white"],"\"Watermelon Lagoon\""],
+                  [["#F0A830","#78C0A8","#5E412F","#F07818",
+                    "#332E2C","#FCEBB6"],"\"ZO\xCB M1\""],
+                  [["#ae6e38","#e3c66a","#636ea3","#8ab4ba",
+                    "black","#fbfbfb"],"\"Muddy Beach\""],
+                  [["#a67b7b","#819d74","#6f8995","#7d7184",
+                    "black","#c6bb85"],"\"Not Quite Pastel\""],
+                  [["#009e73","#cc79a7","#0072b2","#d55e00","black",
+                    "#f0e442"],"\"Oi Vey\""],
+                  [["#4daf4a","#984ea3","#377eb8","#ff7f00","black",
+                    "#f0e442"],"\"High Contra\""]
+                 ];
+    var index = Math.floor(Math.random()*colSets.length);
+    coloursMenu= ColoursMenu(c2e,{colourOptions:colSets})
+    params={_atest:"",
+            colours:pallet2colours(colSets[index][0]),
+            colourName:colSets[index][1]};
     //loadMenu(ctx,params);
     //optionsMenu(ctx,params);
     coloursMenu(ctx,params);
+
+
+
+    //document.getElementById("mainGame").appendChild(grid);
+}
+
+
+function pallet2colours(colours){
+    var pallet ={team1:colours[0],
+                 team2:colours[2],
+                 team3:colours[1],
+                 dead:colours[4],
+                 pointer:colours[4],
+                 hitExp:colours[3],
+                 accent:colours[3],
+                 behind:colours[5]}
+    var colours={team1:"red",team2:"blue",team3:"green",
+                 dead:"black",pointer:"black",hitExp:"yellow",
+                 accent:"yellow",behind:"white"}
+    var keys = Object.keys(pallet);
+    for(var i in keys){
+        colours[keys[i]]=pallet[keys[i]];
+    }
+    return colours;
 }
 
 function checkForEvents(game){
@@ -68,7 +104,7 @@ function drawAlphaLogo(ctx,findColour){
     ctx.textBaseline ="middle";
     ctx.textAlign ="center";
     ctx.font = "30px Impact";
-    ctx.fillText("ALPHA V0.1.0",ctx.canvas.width-100,ctx.canvas.height*15/16);
+    ctx.fillText("ALPHA V0.1.1",ctx.canvas.width-100,ctx.canvas.height*15/16);
 }
 
 
@@ -197,6 +233,7 @@ function animate(game,ctx){
         game.systems[drawtype](game.ents[i]);
     }
 }
+
 
 
 function fullGridDraw(game){

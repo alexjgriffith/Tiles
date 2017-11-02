@@ -2,9 +2,9 @@ var ws = new Object;
 var clientID = 0;
 var lognet={};
 lognet.rec=false; // log all received ws messages
-//var address = "ws://sadcod.com/websocket"
+var address = "ws://sadcod.com/websocket"
 //var address = "ws://skyisles.ca:11000/websocket"
-var address = "ws://107.170.127.8:11000/websocket"
+//var address = "ws://107.170.127.8:11000/websocket"
 
 function websocketPing(){
     websocketSendEvent("message","hello world!");

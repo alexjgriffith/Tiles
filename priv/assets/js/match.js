@@ -9,7 +9,7 @@ function initMatch(ctx,params,tiles,player){
     //console.log(params);
     if(params==null || params == undefined )
         console.log("Error: Params Not Initializes")
-
+    var findColour;
     ctx.canvas.style.cursor="none"
     //console.log(player);
     definePlayer(player,params.colours);
@@ -24,6 +24,7 @@ function initMatch(ctx,params,tiles,player){
         nextState:loadMenu,
         params:params,
         cleanup:clearMatch,
+        note:"",
         version:"0.1",
         fps:[30,30,30,30,30,30,30,30,30,30,
              30,30,30,30,30,30,30,30,30,30,
@@ -58,6 +59,9 @@ function initMatch(ctx,params,tiles,player){
                            pass0,ctx.canvas.width/2,
                            ctx.canvas.height*0.75)
     date = new Date;
+    findColour=findColourGen(game.params.colours)
+    ctx.fillStyle=findColour("white");
+    ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);
     gameloop(game,eval,draw,ctx,date.getTime(),frames);
 }
 
@@ -146,6 +150,7 @@ function eval(game,inputs,ctx, dt){
     }
     //pelem = document.getElementById("index");
     //pelem.innerHTML="fps: " + Math.round(1000 / fps) + " frames: " + "60";
+    game.note="fps: " + Math.round(1000 / fps)
     runOtherPlayerAI(dt/33.3333)
     updateBullets(dt/33.3333)
     updateExplosions(dt/33.3333)
@@ -154,13 +159,13 @@ function eval(game,inputs,ctx, dt){
     //if(game.playerAlive){
         updatePlayer(game.tiles,dt/33.3333);
     //}
-    game=updateCamera(game,playerPos());
     updatePP(Date.now());
     if(game.playerAlive == false){
         updateButtons(inputs.pos,inputs.click,[null]);
     }
 
     game = checkForEvents(game);
+    game=updateCamera(game,playerPos());
     websocketPing();
     return game;
 }
@@ -176,6 +181,7 @@ function draw(game, ctx){
     var ty = Math.floor(game.camera.y / ts.y);
     var findColour = findColourGen(game.params.colours)
     //ctx.clearRect(0,0,600,400);
+    //ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     ctx.drawImage(game.grid,game.camera.x,game.camera.y,game.dim.x,game.dim.y,0,0,game.dim.x,game.dim.y);
     edraw(ctx,game.camera)
     odraw(ctx,game.camera);
@@ -216,7 +222,16 @@ function draw(game, ctx){
         ctx.fillText("Ship Down",ctx.canvas.width/2,ctx.canvas.height*0.5);
         drawButtons(ctx,game.params.colours);
     }
+    drawFPS(ctx,game.note,findColour);
     drawAlphaLogo(ctx,findColour);
+}
+
+function drawFPS(ctx,note,findColour){
+    ctx.fillStyle=findColour("black");
+    ctx.textBaseline ="middle";
+    ctx.textAlign ="center";
+    ctx.font = "20px Impact";
+    ctx.fillText(note,ctx.canvas.width-50,ctx.canvas.height*1/16);
 }
 
 
