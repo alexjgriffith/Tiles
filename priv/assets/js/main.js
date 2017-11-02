@@ -1,4 +1,4 @@
-var frames = 1000 / 60;
+var frames = 1000 / 30;
 var mouse={pos:{x:null,y:null},click:null};
 var keys = {moves:[],actions:[]};
 var positionPlayer={ptime:Date.now(),pos:[]};
@@ -129,9 +129,12 @@ function matchFunction(ctx,params){
             return game;
         });};}
 
-function gameloop (game,eval,draw,ctx,time,dt){
-    var date,wait,end,start = new Date();
-    var inputs = getInputs();
+function gameloop (game,eval,draw,ctx,time){
+    var start,dt;
+    var inputs;
+    start = (new Date()).getTime();
+    dt = start - time;
+    inputs= getInputs();
     game = eval(game,inputs,ctx,dt);
     if(game.terminate){
         game.cleanup();
@@ -139,20 +142,8 @@ function gameloop (game,eval,draw,ctx,time,dt){
         return -1;
     }
     draw(game,ctx);
-    end = new Date();
-    wait = end.getTime() - start.getTime();
-    if(wait < frames){
-        setTimeout(function(){
-            var date = new Date();
-            window.requestAnimationFrame(function() {
-                gameloop(game,eval,draw,ctx,date.getTime(),date.getTime()-time )});
-        }, frames - wait)
-    }
-    else {
-        date = new Date();
-        window.requestAnimationFrame(function(){
-            gameloop(game,eval,draw,ctx,date.getTime(),date.getTime()-time)});
-    }
+    window.requestAnimationFrame(function() {
+        gameloop(game,eval,draw,ctx,start )});
 }
 
 function click(event,ctx){

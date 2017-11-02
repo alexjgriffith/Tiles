@@ -62,7 +62,7 @@ function initMatch(ctx,params,tiles,player){
     findColour=findColourGen(game.params.colours)
     ctx.fillStyle=findColour("white");
     ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);
-    gameloop(game,eval,draw,ctx,date.getTime(),frames);
+    gameloop(game,eval,draw,ctx,date.getTime());
 }
 
 function keyAction(inputs,action,fun){
