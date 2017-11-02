@@ -13,7 +13,7 @@ start(_StartType, _StartArgs) ->
                          {"/websocket", tiles_handler, []}
                         ]}
                  ]),
-    {ok, _} = cowboy:start_clear(http, [{port, 11000}],#{
+    {ok, _} = cowboy:start_clear(http, [{port, 10000}],#{
                                          env => #{dispatch => Dispatch},
                                          stream_handlers =>
                                              [cowboy_compress_h, cowboy_stream_h]
