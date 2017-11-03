@@ -1,3 +1,4 @@
+
 var frames = 1000 / 30;
 var mouse={pos:{x:null,y:null},click:null};
 var keys = {moves:[],actions:[]};
@@ -25,8 +26,15 @@ function main(){
                                 function(e){keyboard(e,"up")},
                               false);
 
-    var colSets =[[["red","green","blue","yellow","black","white"],
+    // Move to server side, each player only gets to see a subset
+    // let them vote on the colours they like
+    // 1/6 top slots will be filled with 10% global top colours
+    // 3/6 will be filled with 10% your top colours
+    // 2/6 will be random
+    var allColSets =[[["red","green","blue","yellow","black","white"],
                    "\"Default\""],
+                  [["#7c68ae","#cd7e05","#b2bb1b","#76a2ca","black","#966a00"],
+                   "\"Scooby Doo\""],
                   [["#fb6542","#3f681c","#375e97","#ffbb00",
                     "black","white"],"\"Watermelon Lagoon\""],
                   [["#F0A830","#78C0A8","#5E412F","#F07818",
@@ -34,12 +42,13 @@ function main(){
                   [["#ae6e38","#e3c66a","#636ea3","#8ab4ba",
                     "black","#fbfbfb"],"\"Muddy Beach\""],
                   [["#a67b7b","#819d74","#6f8995","#7d7184",
-                    "black","#c6bb85"],"\"Not Quite Pastel\""],
+                    "#332E2C","#c6bb85"],"\"Not Quite Pastel\""],
                   [["#009e73","#cc79a7","#0072b2","#d55e00","black",
                     "#f0e442"],"\"Oi Vey\""],
                   [["#4daf4a","#984ea3","#377eb8","#ff7f00","black",
                     "#f0e442"],"\"High Contra\""]
-                 ];
+                    ];
+    var colSets =  allColSets//getRandomSubarray(allColSets, 5);
     var index = Math.floor(Math.random()*colSets.length);
     coloursMenu= ColoursMenu(c2e,{colourOptions:colSets})
     params={_atest:"",
