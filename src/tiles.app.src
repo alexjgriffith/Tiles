@@ -13,7 +13,8 @@
         jiffy
     ]},
     {mod, { tiles_app, []}},
-    {env, [
+    {env, [{port,11000},
+           {index,"testing.html"},
            {lager, [
                     {log_root, "/home/griffita/development/erlang/tiles/log/"},
                     {handlers, [
