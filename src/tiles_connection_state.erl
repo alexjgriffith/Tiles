@@ -1,3 +1,14 @@
+%% Make into a gen_server, the player should have already been 
+%% authorized in the rest portion of the server. The match user await
+%% db will have the user name token pair that will be checked agianst 
+%% for any actions that interact with the match
+%%
+%% Maybe add a first auth step here just to limit the capacity to 
+%% muck arround with the player state
+%%
+%% do not store the id for brodcast in state, keep it in match,
+
+
 -module(tiles_connection_state).
 -behaviour(gen_fsm).
 

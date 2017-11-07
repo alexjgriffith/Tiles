@@ -4,11 +4,10 @@
 
 
 start(_StartType, _StartArgs) ->
-    lager:debug("Starting App", []),
+    %%lager:debug("Starting App", []),
     {ok,Index}=application:get_env(tiles,index),
     {ok,Port}=application:get_env(tiles,port),
-
-    io:format("~p~n",[Port]),
+    io:format("port: ~p~n",[Port]),
     Dispatch = cowboy_router:compile(
                  [
                   {'_', [

@@ -5,8 +5,8 @@ var keys = {moves:[],actions:[]};
 var positionPlayer={ptime:Date.now(),pos:[]};
 var forumButton={toggleConnection:false};
 var events=[];
-
-function main(){
+var drawAlphaLogo;
+function main(Alpha){
     var x=800,y=600;
     var ctx,colours,findColour;
     //document.getElementById("mainGame").innerHTML="<canvas id='gameCanvas' width='"+x+"' height='"+y+"' tabindex='1'></canvas>";
@@ -25,14 +25,16 @@ function main(){
     document.addEventListener("keyup",
                                 function(e){keyboard(e,"up")},
                               false);
-
+    drawAlphaLogo=drawAlphaLogoFun(Alpha);
+    address = "wss://"+window.location.hostname+"/websocket";
     // Move to server side, each player only gets to see a subset
     // let them vote on the colours they like
     // 1/6 top slots will be filled with 10% global top colours
     // 3/6 will be filled with 10% your top colours
     // 2/6 will be random
     var allColSets =[[["red","green","blue","yellow","black","white"],
-                   "\"Default\""],
+                      "\"Default\""],
+                     [["#c39f31", "#00c992","#fd4a2b", "#dddddd", "black", "#f5f5f5"],"\"Menthol\""],
                   [["#7c68ae","#cd7e05","#b2bb1b","#76a2ca","black","#966a00"],
                    "\"Scooby Doo\""],
                   [["#fb6542","#3f681c","#375e97","#ffbb00",
@@ -108,14 +110,15 @@ function findColourGen(colours){
     }
 };
 
-function drawAlphaLogo(ctx,findColour){
-    ctx.fillStyle=findColour("black");
-    ctx.textBaseline ="middle";
-    ctx.textAlign ="center";
-    ctx.font = "30px Impact";
-    ctx.fillText("ALPHA V0.1.1",ctx.canvas.width-100,ctx.canvas.height*15/16);
+function drawAlphaLogoFun(text){
+    return function(ctx,findColour){
+        ctx.fillStyle=findColour("black");
+        ctx.textBaseline ="middle";
+        ctx.textAlign ="center";
+        ctx.font = "30px Impact";
+        ctx.fillText(text,ctx.canvas.width-100,ctx.canvas.height*15/16);
 }
-
+}
 
 var notImplementedHover = function(){
     events.push(function(game){game.note="Not Implemented"; return game;});
