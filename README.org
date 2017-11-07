@@ -2,18 +2,17 @@
 #+AUTHOR: Alexander Griffith
 ** Search and Destroy, Colours of Destiny
 
-Lost in a colourscape, you must search and destroy others!!
+*** Lost in a colourscape, you must search and destroy or be destroyed others!!
 
 1. Blend in with your surroundings
 2. Collect energy
-3. Hunt others or be hunted
+3. Hunt
 4. Eliminate them one by one
 
 
-Rules of the game:
+*** Rules of the game:
 
-- Expend energy to shoot, the shot will be the colour you have the most
-energy of. In a tie a random colour is chosen
+- Expend energy to shoot, the shot will be the colour you have the most energy of. In a tie a random colour is chosen
 - Collect energy based on the colours you are on
 - Your colour is that of the highest energy level (blue, green or red)
 - You are immune to shots of your own colour (e.g. blue wont damage blue)
