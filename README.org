@@ -1,15 +1,49 @@
-#+TITLE: Tiles App V0.1.0
+#+TITLE: SADCOD App
 #+AUTHOR: Alexander Griffith
+** Search and Destroy, Colours of Destiny
 
-* For Alpha 0.2.0
-** Client
+Lost in a colourscape, you must search and destroy others!!
+
+1. Blend in with your surroundings
+2. Collect energy
+3. Hunt others or be hunted
+4. Eliminate them one by one
+
+
+Rules of the game:
+
+- Expend energy to shoot, the shot will be the colour you have the most
+energy of. In a tie a random colour is chosen
+- Collect energy based on the colours you are on
+- Your colour is that of the highest energy level (blue, green or red)
+- You are immune to shots of your own colour (e.g. blue wont damage blue)
+- Take 10 shots and you are out
+
+
+
+** Default Controls
+Note that these will be customizable in the future.
+
+| Command | Keys                 |
+|---------+----------------------|
+| up      | <arrow-up>, w        |
+| down    | <arrow-down>, s      |
+| left    | <arrow-left>, s      |
+| right   | <arrow-right>, s     |
+| shoot   | space                |
+| search  | <right-mouse-button> |
+| camera  | <mouse>              |
+  
+
+** For Alpha 0.2.0
+*** Client
 1. [ ] Refactor JS to use modules
 2. [ ] Add colour variations options
 3. [ ] Implement NPCs
 4. [ ] Reprogramable controls
 
-** Server
-1. [ ] Add player persistance mnesia table
+*** Server
+1. [ ] Add player persistence mnesia table
 2. [ ] Implement protobuf for websockets
 3. [ ] Further develop simple setup api (JSON)
-     - check out the feasbility of builiding a rest handler
+     - check out the feasibility of building a rest handler
