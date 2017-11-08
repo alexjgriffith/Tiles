@@ -8,7 +8,6 @@
 %%
 %% do not store the id for brodcast in state, keep it in match,
 
-
 -module(tiles_connection_state).
 -behaviour(gen_fsm).
 
