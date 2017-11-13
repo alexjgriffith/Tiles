@@ -98,7 +98,6 @@ find_match(FSMPid,Player,MatchId) ->
     %%io:format("find Match~n"),
     gen_fsm:send_event(FSMPid,{find_match,Player,MatchId}).
 
-
 matching_failed(FSMPid,PlayerInfo) ->
     gen_fsm:send_event(FSMPid,{no_match,PlayerInfo}).
 

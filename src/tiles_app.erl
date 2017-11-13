@@ -14,7 +14,7 @@ start(_StartType, _StartArgs) ->
                          {"/", cowboy_static, {priv_file,tiles,Index}},
                          {"/assets/[...]", cowboy_static, {priv_dir,tiles,"assets"}},
                          {"/api/v0/match",tiles_match_handler,[]},
-                         {"/websocket", tiles_handler, []}
+                         {"/websocket/[...]", tiles_ws_handler, []}
                         ]}
                  ]),
     {ok, _} = cowboy:start_clear(http, [{port, Port}],#{
